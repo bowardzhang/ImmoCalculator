@@ -55,9 +55,12 @@ header#mainHeader.compact {
 header.compact .header-left h1 { font-size: 1rem; }
 header.compact .header-left .subtitle { display: none; }
 
-/* Header KPI */
+/* Header KPI - hidden by default, shown when compact */
 .header-kpi {
-  display: flex; gap: 1rem; align-items: center;
+  display: none; gap: 1rem; align-items: center;
+}
+header.compact .header-kpi {
+  display: flex;
 }
 .h-kpi {
   display: flex; flex-direction: column; align-items: center;
