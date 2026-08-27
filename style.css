@@ -267,3 +267,23 @@ legend small { font-weight: 400; color: var(--text-muted); }
 
 /* ===== Footer ===== */
 footer { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+/* ===== Legend Hover Tooltip ===== */
+.legend-tooltip {
+  position: absolute; z-index: 150;
+  max-width: 340px; min-width: 220px;
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  font-size: 0.8rem; line-height: 1.55;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+body[data-theme="light"] .legend-tooltip {
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.legend-tooltip b { color: var(--text); }
