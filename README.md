@@ -1,5 +1,20 @@
 # ImmoCalculator 🏠
 
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
+  <a href="https://bowardzhang.github.io/ImmoCalculator"><img src="https://img.shields.io/badge/GitHub%20Pages-live-brightgreen.svg" alt="GitHub Pages"></a>
+  <a href="https://github.com/bowardzhang/ImmoCalculator"><img src="https://img.shields.io/github/stars/bowardzhang/ImmoCalculator?style=social" alt="GitHub Stars"></a>
+</p>
+
+<p align="center">
+  <a href="#chinese"><b>🇨🇳 中文</b></a> &nbsp;·&nbsp; 
+  <a href="#german"><b>🇩🇪 Deutsch</b></a> &nbsp;·&nbsp; 
+  <a href="#english"><b>🇬🇧 English</b></a>
+</p>
+
+---
+
+<a id="chinese"></a>
 <details open>
 <summary><b>🇨🇳 中文</b> <i>(默认)</i></summary>
 
@@ -69,6 +84,7 @@ python3 -m http.server 8080
 
 ---
 
+<a id="german"></a>
 <details>
 <summary><b>🇩🇪 Deutsch</b></summary>
 
@@ -135,6 +151,7 @@ python3 -m http.server 8080
 
 ---
 
+<a id="english"></a>
 <details>
 <summary><b>🇬🇧 English</b></summary>
 
