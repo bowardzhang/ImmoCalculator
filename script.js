@@ -22,60 +22,7 @@
   var breakEvenPlugin={id:'breakEvenLine',afterDraw:function(chart){var yr=chart.options.plugins&&chart.options.plugins.breakEvenLine&&chart.options.plugins.breakEvenLine.year;if(yr==null)return;var meta=chart.getDatasetMeta(3);if(!meta||!meta.data||meta.data.length===0||yr<0||yr>=meta.data.length)return;var ctx=chart.ctx,xs=chart.scales.x,ys=chart.scales.y,x=xs.getPixelForValue(yr);ctx.save();ctx.beginPath();ctx.setLineDash([6,4]);ctx.strokeStyle=COLORS.breakEven;ctx.lineWidth=2;ctx.moveTo(x,ys.top);ctx.lineTo(x,ys.bottom);ctx.stroke();ctx.setLineDash([]);var label='✨ 第'+yr+'年';ctx.font='bold 12px Inter, system-ui, sans-serif';var tw=ctx.measureText(label).width,ly=ys.top-10;ctx.fillStyle=COLORS.breakEven+'22';ctx.beginPath();ctx.roundRect(x-tw/2-8,ly-14,tw+16,22,6);ctx.fill();ctx.strokeStyle=COLORS.breakEven;ctx.lineWidth=1;ctx.stroke();ctx.fillStyle=COLORS.breakEven;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,ly-3);var pt=meta.data[yr];if(pt){ctx.beginPath();ctx.fillStyle=COLORS.breakEven;ctx.moveTo(pt.x,pt.y-6);ctx.lineTo(pt.x-7,pt.y-20);ctx.lineTo(pt.x+7,pt.y-20);ctx.closePath();ctx.fill();ctx.beginPath();ctx.arc(pt.x,pt.y,5,0,Math.PI*2);ctx.fillStyle='#ffffff';ctx.fill();ctx.strokeStyle=COLORS.breakEven;ctx.lineWidth=2.5;ctx.stroke();}ctx.restore();}};
   Chart.register(breakEvenPlugin);
 
-  // ===== Legend Hover Tooltip =====
-  var legendDescriptions = {
-    'cumulativeCashflow': '<b>累计净现金流</b><br>每年所有现金流入减去流出的累计值。<br>起始为负（首付支出），之后每年叠加：租金收入 − 贷款本息 − 维修 − Hausgeld − Grundsteuer − 保险 − 税费。<br>转正意味着累计现金回流已覆盖初始投入。',
-    'equity': '<b>房屋净值 (Eigenkapital)</b><br>当前房价 − 剩余贷款。<br>反映如果此时卖掉房产并还清贷款后能拿到的钱。<br>随房价增值和贷款还本逐年增加。',
-    'remainingLoan': '<b>剩余贷款 (Restschuld)</b><br>尚未还清的银行贷款余额。<br>每年递减 = 上年余额 − 当年本金偿还 (Tilgung)。<br>贷款还清后归零，此时月供停止。',
-    'netWorth': '<b>总净资产 (Gesamtvermögen)</b><br>房屋净值 + 累计净现金流。<br>= 房价 − 剩余贷款 + (首付支出 + 历年净现金流)。<br>这是衡量投资总回报的核心指标：你的全部财富（房产权益 + 现金）。'
-  };
-  var legendTooltipEl = null;
-  function getLegendTooltipEl() {
-    if (!legendTooltipEl) {
-      legendTooltipEl = document.createElement('div');
-      legendTooltipEl.className = 'legend-tooltip';
-      legendTooltipEl.style.display = 'none';
-      document.body.appendChild(legendTooltipEl);
-    }
-    return legendTooltipEl;
-  }
-  function bindLegendHover() {
-    var tip = getLegendTooltipEl();
-    var canvas = chartCanvas;
-    canvas.addEventListener('mousemove', function(e) {
-      if (!chartInstance || !chartInstance.legend) return;
-      var rect = canvas.getBoundingClientRect();
-      var mx = e.clientX - rect.left;
-      var my = e.clientY - rect.top;
-      var items = chartInstance.legend.legendItems;
-      for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        if (!item) continue;
-        var ix = item.x, iy = item.y;
-        var iw = item.width || 120, ih = item.height || 16;
-        if (mx >= ix && mx <= ix + iw && my >= iy - 4 && my <= iy + ih + 4) {
-          var text = item.text || '';
-          var key = text.indexOf('Kum') >= 0 ? 'cumulativeCashflow'
-            : text.indexOf('Eigen') >= 0 ? 'equity'
-            : text.indexOf('Rest') >= 0 ? 'remainingLoan'
-            : text.indexOf('Gesamt') >= 0 ? 'netWorth' : null;
-          if (key && legendDescriptions[key]) {
-            tip.innerHTML = legendDescriptions[key];
-            tip.style.display = 'block';
-            var canvasRect = canvas.getBoundingClientRect();
-            var tipX = canvasRect.left + window.scrollX + ix;
-            var tipY = canvasRect.top + window.scrollY - tip.offsetHeight - 6;
-            if (tipY < window.scrollY + 4) tipY = canvasRect.bottom + window.scrollY + 6;
-            tip.style.left = tipX + 'px';
-            tip.style.top = tipY + 'px';
-            return;
-          }
-        }
-      }
-      tip.style.display = 'none';
-    });
-    canvas.addEventListener('mouseleave', function() { tip.style.display = 'none'; });
-  }
+
 
   function renderChart(data){var bey=findBreakEvenYear(data),labels=data.map(function(d){return d.year===0?'0 (买入)':String(d.year);});var dk=document.body.getAttribute('data-theme')!=='light';var gc=dk?'#1e293b':'#e2e8f0',tc=dk?'#64748b':'#64748b',tl=dk?'#94a3b8':'#475569',lc=dk?'#94a3b8':'#334155';var ds=[{label:'累计净现金流 (Kum. Cashflow)',data:data.map(function(d){return d.cumulativeCashflow;}),borderColor:COLORS.cashflow,fill:false,tension:0.3,pointRadius:2,borderWidth:2},{label:'房屋净值 (Eigenkapital)',data:data.map(function(d){return d.equity;}),borderColor:COLORS.equity,fill:false,tension:0.3,pointRadius:2,borderWidth:2},{label:'剩余贷款 (Restschuld)',data:data.map(function(d){return d.remainingLoan;}),borderColor:COLORS.debt,fill:false,tension:0.3,pointRadius:2,borderWidth:2,borderDash:[5,5]},{label:'总净资产 (Gesamtvermögen)',data:data.map(function(d){return d.netWorth;}),borderColor:COLORS.propertyValue,fill:false,tension:0.3,pointRadius:2,borderWidth:2.5}];var cfg={type:'line',data:{labels:labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,aspectRatio:1.6,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:lc,boxWidth:14,padding:16,font:{family:'Inter',size:11}}},tooltip:{backgroundColor:dk?'#1e293b':'#ffffff',borderColor:dk?'#475569':'#cbd5e1',borderWidth:1,padding:10,titleFont:{family:'Inter',size:12},bodyFont:{family:'Inter',size:12},titleColor:dk?'#f1f5f9':'#1e293b',bodyColor:dk?'#94a3b8':'#475569',callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmtEur(ctx.raw);}}},breakEvenLine:{year:bey}},scales:{x:{title:{display:true,text:'年份 (Jahr)',color:tl,font:{family:'Inter',size:12}},ticks:{color:tc,font:{family:'Inter',size:11}},grid:{color:gc}},y:{title:{display:true,text:'金额 (€)',color:tl,font:{family:'Inter',size:12}},ticks:{color:tc,font:{family:'Inter',size:11},callback:function(v){if(Math.abs(v)>=1e6)return(v/1e6).toFixed(1)+'M';if(Math.abs(v)>=1000)return(v/1e3).toFixed(0)+'k';return v;}},grid:{color:gc}}}}};if(chartInstance)chartInstance.destroy();chartInstance=new Chart(chartCanvas,cfg);}
 
@@ -101,5 +48,5 @@ document.getElementById('modalMin').addEventListener('input',saveCurrentRanges);
 document.getElementById('modalMax').addEventListener('input',saveCurrentRanges);
 document.getElementById('purchasePrice').addEventListener('input',function(){clampDownPayment();});
 document.getElementById('downPayment').addEventListener('input',function(){clampDownPayment();});
-run();bindLegendHover();});
+run();});
 })();

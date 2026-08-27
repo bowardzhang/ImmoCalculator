@@ -255,6 +255,44 @@
             <table id="dataTable"><thead></thead><tbody></tbody></table>
           </div>
         </div>
+
+        <!-- 指标解释 -->
+        <div class="metric-explanations">
+          <h3>📖 指标解释</h3>
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-header"><span class="metric-dot" style="background:#22c55e"></span><b>累计净现金流 (Kum. Cashflow)</b></div>
+              <p>每年所有现金流入减去流出的累计值。</p>
+              <p>起始为负（首付支出），之后每年叠加：租金收入 − 贷款本息 − 维修 − Hausgeld − Grundsteuer − 保险 − 税费。</p>
+              <p>转正意味着累计现金回流已覆盖初始投入。</p>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header"><span class="metric-dot" style="background:#3b82f6"></span><b>房屋净值 (Eigenkapital)</b></div>
+              <p>当前房价 − 剩余贷款。</p>
+              <p>反映如果此时卖掉房产并还清贷款后能拿到的钱。</p>
+              <p>随房价增值和贷款还本逐年增加。</p>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header"><span class="metric-dot" style="background:#ef4444"></span><b>剩余贷款 (Restschuld)</b></div>
+              <p>尚未还清的银行贷款余额。</p>
+              <p>每年递减 = 上年余额 − 当年本金偿还 (Tilgung)。</p>
+              <p>贷款还清后归零，此时月供停止，现金流大幅改善。</p>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header"><span class="metric-dot" style="background:#eab308"></span><b>总净资产 (Gesamtvermögen)</b></div>
+              <p>房屋净值 + 累计净现金流。</p>
+              <p>= 房价 − 剩余贷款 + 首付支出 + 历年净现金流。</p>
+              <p>这是衡量投资总回报的核心指标：你的全部财富（房产权益 + 现金）。</p>
+            </div>
+            <div class="metric-card metric-card-wide">
+              <div class="metric-header"><span class="metric-dot" style="background:#a855f7"></span><b>年化 ROI</b></div>
+              <p>简化年化复利回报率。公式：</p>
+              <div class="metric-formula">总利润 ÷ 用户总投入 × 100 = 简单 ROI (%)<br>年化 ROI = (1 + 简单ROI/100)<sup>1/年数</sup> − 1 × 100%</div>
+              <p>其中「用户总投入」= 首付 + 历年所有负现金流补亏之和。「总利润」= 终期净资产 − 初始净资产（= −交易成本）。</p>
+              <p>这是一个简化算法（非 XIRR），把所有投入视为初始投入，用复利公式反推年化回报。</p>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   </main>

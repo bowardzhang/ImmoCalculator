@@ -268,25 +268,43 @@ legend small { font-weight: 400; color: var(--text-muted); }
 #dataTable td:first-child, #dataTable th:first-child { text-align: left; }
 #dataTable tbody tr:hover { background: var(--surface-alt); }
 
-/* ===== Footer ===== */
-footer { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
-
-/* ===== Legend Hover Tooltip ===== */
-.legend-tooltip {
-  position: absolute; z-index: 150;
-  max-width: 340px; min-width: 220px;
-  padding: 0.8rem 1rem;
+/* ===== Metric Explanations ===== */
+.metric-explanations {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-  font-size: 0.8rem; line-height: 1.55;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+.metric-explanations h3 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--text); }
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 700px) { .metric-grid { grid-template-columns: 1fr; } }
+.metric-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
   color: var(--text-muted);
-  pointer-events: none;
-  transition: opacity 0.15s;
 }
-body[data-theme="light"] .legend-tooltip {
-  background: #fff;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+.metric-card p { margin: 0.3rem 0; }
+.metric-card b { color: var(--text); }
+.metric-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+.metric-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.metric-card-wide { grid-column: 1 / -1; }
+.metric-formula {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.6rem 0.8rem;
+  font-family: monospace; font-size: 0.8rem;
+  color: var(--text); line-height: 1.6;
+  margin: 0.4rem 0;
 }
-.legend-tooltip b { color: var(--text); }
+
+/* ===== Footer ===== */
+footer { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
