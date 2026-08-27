@@ -24,7 +24,6 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg); color: var(--text);
   line-height: 1.6; min-height: 100vh;
-  padding-top: var(--header-h);
 }
 
 /* ===== Sticky Header ===== */
@@ -112,7 +111,7 @@ body[data-theme="light"] .icon-moon { display: none; }
 .input-panel {
   background: var(--surface); border-radius: var(--radius);
   padding: 1.25rem; border: 1px solid var(--border);
-  height: fit-content; position: sticky; top: 60px;
+  height: fit-content; position: sticky; top: 56px;
 }
 fieldset {
   border: 1px solid var(--border); border-radius: var(--radius-sm);
