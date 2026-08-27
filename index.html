@@ -13,8 +13,14 @@
 <body>
   <header>
     <div class="header-content">
-      <h1>🏠 ImmoCalculator</h1>
-      <p class="subtitle">德国投资公寓收益周期曲线模拟器</p>
+      <div class="header-left">
+        <h1>🏠 ImmoCalculator</h1>
+        <p class="subtitle">德国投资公寓收益周期曲线模拟器</p>
+      </div>
+      <button id="themeToggle" class="theme-toggle" aria-label="切换主题">
+        <span class="icon-sun">☀️</span>
+        <span class="icon-moon">🌙</span>
+      </button>
     </div>
   </header>
 
@@ -30,7 +36,7 @@
               <label>
                 <span class="label-text">购买价格 <small>(Kaufpreis)</small></span>
                 <div class="input-group">
-                  <input type="number" id="purchasePrice" value="300000" min="10000" step="1000" required>
+                  <input type="text" id="purchasePrice" value="450000" min="10000" step="1000" required inputmode="numeric" data-format="euro">
                   <span class="suffix">€</span>
                 </div>
               </label>
@@ -48,7 +54,7 @@
               <label>
                 <span class="label-text">月租金 (Kaltmiete)</span>
                 <div class="input-group">
-                  <input type="number" id="monthlyRent" value="1000" min="0" step="50" required>
+                  <input type="text" id="monthlyRent" value="1200" min="0" step="50" required inputmode="numeric" data-format="euro">
                   <span class="suffix">€</span>
                 </div>
               </label>
@@ -103,7 +109,7 @@
               <label>
                 <span class="label-text">首付 (Eigenkapital)</span>
                 <div class="input-group">
-                  <input type="number" id="downPayment" value="60000" min="0" step="5000" required>
+                  <input type="text" id="downPayment" value="60000" min="0" step="5000" required inputmode="numeric" data-format="euro">
                   <span class="suffix">€</span>
                 </div>
               </label>
@@ -135,7 +141,7 @@
               <label>
                 <span class="label-text">Hausgeld <small>(非分摊部分)</small></span>
                 <div class="input-group">
-                  <input type="number" id="hausgeld" value="150" min="0" step="10" required>
+                  <input type="text" id="hausgeld" value="150" min="0" step="10" required inputmode="numeric" data-format="euro">
                   <span class="suffix">€/月</span>
                 </div>
               </label>
@@ -144,7 +150,7 @@
               <label>
                 <span class="label-text">Grundsteuer</span>
                 <div class="input-group">
-                  <input type="number" id="grundsteuer" value="400" min="0" step="20" required>
+                  <input type="text" id="grundsteuer" value="400" min="0" step="20" required inputmode="numeric" data-format="euro">
                   <span class="suffix">€/年</span>
                 </div>
               </label>
@@ -153,7 +159,7 @@
               <label>
                 <span class="label-text">房屋保险 <small>(Wohngebäude)</small></span>
                 <div class="input-group">
-                  <input type="number" id="insurance" value="300" min="0" step="20" required>
+                  <input type="text" id="insurance" value="300" min="0" step="20" required inputmode="numeric" data-format="euro">
                   <span class="suffix">€/年</span>
                 </div>
               </label>

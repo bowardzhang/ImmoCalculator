@@ -1,446 +1,225 @@
 /* ================================
-   ImmoCalculator — Calculation Engine
+   ImmoCalculator - Calculation Engine
    ================================ */
-
 (function () {
   'use strict';
+  var chartInstance = null;
+  var COLORS = { cashflow: '#22c55e', equity: '#3b82f6', debt: '#ef4444', propertyValue: '#eab308', zeroLine: '#475569', breakEven: '#a855f7' };
+  var form = document.getElementById('calcForm');
+  var chartCanvas = document.getElementById('chart');
 
-  // ===== Chart instance (kept alive across recalculations) =====
-  let chartInstance = null;
-
-  // ===== Color palette =====
-  const COLORS = {
-    cashflow: '#22c55e',
-    equity: '#3b82f6',
-    debt: '#ef4444',
-    propertyValue: '#eab308',
-    zeroLine: '#475569',
-  };
-
-  // ===== Form & DOM refs =====
-  const form = document.getElementById('calcForm');
-  const chartCanvas = document.getElementById('chart');
-
-  // ===== Read inputs =====
+  function initTheme() {
+    var saved = localStorage.getItem('immo-theme');
+    document.body.setAttribute('data-theme', saved || 'dark');
+  }
+  function toggleTheme() {
+    var current = document.body.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', next);
+    localStorage.setItem('immo-theme', next);
+    if (chartInstance) run();
+  }
+  function formatEuroDisplay(v) {
+    if (v === '' || v == null) return '';
+    var cleaned = String(v).replace(/[^\d]/g, '');
+    if (cleaned === '') return '';
+    return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+  function parseEuroInput(str) {
+    if (!str) return 0;
+    return parseFloat(String(str).replace(/\s/g, '')) || 0;
+  }
+  function bindNumberFormatting() {
+    document.querySelectorAll('input[data-format="euro"]').forEach(function (input) {
+      input.value = formatEuroDisplay(input.value);
+      input.addEventListener('blur', function () { var raw = parseEuroInput(input.value); if (!isNaN(raw) && raw !== 0) input.value = formatEuroDisplay(raw); });
+      input.addEventListener('focus', function () { var raw = parseEuroInput(input.value); if (raw > 0) input.value = raw; setTimeout(function () { input.select(); }, 50); });
+      input.addEventListener('input', function () { input.value = input.value.replace(/[^\d\s]/g, ''); });
+    });
+  }
   function getInputs() {
-    const g = (id) => parseFloat(document.getElementById(id).value) || 0;
+    var g = function (id) { return parseFloat(document.getElementById(id).value.replace(/\s/g, '')) || 0; };
     return {
-      purchasePrice: g('purchasePrice'),
-      appreciationRate: g('appreciationRate') / 100,
-      monthlyRent: g('monthlyRent'),
-      rentIncrease: g('rentIncrease') / 100,
-      grunderwerbsteuer: g('grunderwerbsteuer') / 100,
-      notar: g('notar') / 100,
-      makler: g('makler') / 100,
-      downPayment: g('downPayment'),
-      interestRate: g('interestRate') / 100,
-      tilgung: g('tilgung') / 100,
-      hausgeld: g('hausgeld'),
-      grundsteuer: g('grundsteuer'),
-      insurance: g('insurance'),
-      maintenanceRate: g('maintenanceRate') / 100,
-      taxRate: g('taxRate') / 100,
-      afaRate: g('afaRate') / 100,
-      buildingRatio: g('buildingRatio') / 100,
-      holdingPeriod: g('holdingPeriod'),
+      purchasePrice: g('purchasePrice'), appreciationRate: g('appreciationRate') / 100, monthlyRent: g('monthlyRent'),
+      rentIncrease: g('rentIncrease') / 100, grunderwerbsteuer: g('grunderwerbsteuer') / 100, notar: g('notar') / 100,
+      makler: g('makler') / 100, downPayment: g('downPayment'), interestRate: g('interestRate') / 100,
+      tilgung: g('tilgung') / 100, hausgeld: g('hausgeld'), grundsteuer: g('grundsteuer'), insurance: g('insurance'),
+      maintenanceRate: g('maintenanceRate') / 100, taxRate: g('taxRate') / 100, afaRate: g('afaRate') / 100,
+      buildingRatio: g('buildingRatio') / 100, holdingPeriod: g('holdingPeriod'),
     };
   }
-
-  // ===== Core Calculation =====
   function calculate(inp) {
-    // --- Derived values ---
-    const totalAcqCost =
-      inp.purchasePrice * (1 + inp.grunderwerbsteuer + inp.notar + inp.makler);
-    const loanAmount = Math.max(0, totalAcqCost - inp.downPayment);
-    const annualPayment = loanAmount * (inp.interestRate + inp.tilgung);
-    const monthlyPayment = annualPayment / 12;
-
-    // --- Year-by-year simulation ---
-    const years = inp.holdingPeriod;
-    const data = [];
-
-    // Year 0 (acquisition)
-    let propertyValue = inp.purchasePrice;
-    let remainingLoan = loanAmount;
-    let cumulativeCashflow = -inp.downPayment; // initial outflow
-    let totalCapitalInjected = inp.downPayment;
-    let rent = inp.monthlyRent * 12;
-
-    data.push({
-      year: 0,
-      propertyValue,
-      remainingLoan,
-      equity: propertyValue - remainingLoan,
-      cumulativeCashflow,
-      netWorth: propertyValue - remainingLoan + cumulativeCashflow,
-      rent: 0,
-      loanInterest: 0,
-      loanRepayment: 0,
-      maintenance: 0,
-      hausgeld: 0,
-      grundsteuer: 0,
-      insurance: 0,
-      taxEffect: 0,
-      netCashflow: -inp.downPayment,
-      totalCapitalInjected,
-    });
-
-    // Year 1..N
-    for (let y = 1; y <= years; y++) {
-      // Property value (appreciation)
-      propertyValue *= 1 + inp.appreciationRate;
-
-      // Rent (increase each year, starting year 2)
+    var totalAcqCost = inp.purchasePrice * (1 + inp.grunderwerbsteuer + inp.notar + inp.makler);
+    var loanAmount = Math.max(0, totalAcqCost - inp.downPayment);
+    var annualPayment = loanAmount * (inp.interestRate + inp.tilgung);
+    var monthlyPayment = annualPayment / 12;
+    var years = inp.holdingPeriod;
+    var data = [];
+    var pv = inp.purchasePrice, rl = loanAmount, cc = -inp.downPayment, tci = inp.downPayment, rent = inp.monthlyRent * 12;
+    data.push({ year: 0, propertyValue: pv, remainingLoan: rl, equity: pv - rl, cumulativeCashflow: cc, netWorth: pv - rl + cc, rent: 0, loanInterest: 0, loanRepayment: 0, maintenance: 0, hausgeld: 0, grundsteuer: 0, insurance: 0, taxEffect: 0, netCashflow: -inp.downPayment, totalCapitalInjected: tci });
+    for (var y = 1; y <= years; y++) {
+      pv *= 1 + inp.appreciationRate;
       if (y > 1) rent *= 1 + inp.rentIncrease;
-
-      // Operating costs (with 1% yearly inflation for realism)
-      const maintenance = propertyValue * inp.maintenanceRate;
-      const hausgeldYr =
-        y === 1
-          ? inp.hausgeld * 12
-          : data[y - 1].hausgeld * 1.01;
-      const grundsteuerYr =
-        y === 1 ? inp.grundsteuer : data[y - 1].grundsteuer * 1.01;
-      const insuranceYr =
-        y === 1 ? inp.insurance : data[y - 1].insurance * 1.01;
-
-      // Loan (annuity) — only if loan not yet fully repaid
-      let loanInterest = 0;
-      let loanRepayment = 0;
-      if (remainingLoan > 0) {
-        loanInterest = remainingLoan * inp.interestRate;
-        loanRepayment = Math.min(
-          annualPayment - loanInterest,
-          remainingLoan
-        );
-        if (loanRepayment < 0) loanRepayment = 0;
-        remainingLoan -= loanRepayment;
-      }
-
-      // AfA depreciation (non-cash, for tax purposes)
-      const afa = inp.purchasePrice * inp.buildingRatio * inp.afaRate;
-
-      // Tax calculation
-      const taxableIncome =
-        rent -
-        maintenance -
-        hausgeldYr -
-        grundsteuerYr -
-        insuranceYr -
-        loanInterest -
-        afa;
-      const taxEffect = taxableIncome * inp.taxRate; // negative → tax refund
-
-      // Net cash flow (actual money movement)
-      const netCashflow =
-        rent -
-        (loanInterest + loanRepayment) -
-        maintenance -
-        hausgeldYr -
-        grundsteuerYr -
-        insuranceYr -
-        taxEffect;
-
-      cumulativeCashflow += netCashflow;
-
-      // Track total capital injected
-      if (netCashflow < 0) {
-        totalCapitalInjected += Math.abs(netCashflow);
-      }
-
-      const equity = propertyValue - Math.max(0, remainingLoan);
-      const netWorth = equity + cumulativeCashflow;
-
-      data.push({
-        year: y,
-        propertyValue: Math.round(propertyValue),
-        remainingLoan: Math.round(Math.max(0, remainingLoan)),
-        equity: Math.round(equity),
-        cumulativeCashflow: Math.round(cumulativeCashflow),
-        netWorth: Math.round(netWorth),
-        rent: Math.round(rent),
-        loanInterest: Math.round(loanInterest),
-        loanRepayment: Math.round(loanRepayment),
-        maintenance: Math.round(maintenance),
-        hausgeld: Math.round(hausgeldYr),
-        grundsteuer: Math.round(grundsteuerYr),
-        insurance: Math.round(insuranceYr),
-        afa: Math.round(afa),
-        taxableIncome: Math.round(taxableIncome),
-        taxEffect: Math.round(taxEffect),
-        netCashflow: Math.round(netCashflow),
-        totalCapitalInjected: Math.round(totalCapitalInjected),
-      });
+      var maint = pv * inp.maintenanceRate;
+      var hg = y === 1 ? inp.hausgeld * 12 : data[y-1].hausgeld * 1.01;
+      var gs = y === 1 ? inp.grundsteuer : data[y-1].grundsteuer * 1.01;
+      var ins = y === 1 ? inp.insurance : data[y-1].insurance * 1.01;
+      var li = 0, lr = 0;
+      if (rl > 0) { li = rl * inp.interestRate; lr = Math.min(annualPayment - li, rl); if (lr < 0) lr = 0; rl -= lr; }
+      var afa = inp.purchasePrice * inp.buildingRatio * inp.afaRate;
+      var ti = rent - maint - hg - gs - ins - li - afa;
+      var te = ti * inp.taxRate;
+      var ncf = rent - (li + lr) - maint - hg - gs - ins - te;
+      cc += ncf;
+      if (ncf < 0) tci += Math.abs(ncf);
+      var eq = pv - Math.max(0, rl);
+      var nw = eq + cc;
+      data.push({ year: y, propertyValue: Math.round(pv), remainingLoan: Math.round(Math.max(0, rl)), equity: Math.round(eq), cumulativeCashflow: Math.round(cc), netWorth: Math.round(nw), rent: Math.round(rent), loanInterest: Math.round(li), loanRepayment: Math.round(lr), maintenance: Math.round(maint), hausgeld: Math.round(hg), grundsteuer: Math.round(gs), insurance: Math.round(ins), afa: Math.round(afa), taxableIncome: Math.round(ti), taxEffect: Math.round(te), netCashflow: Math.round(ncf), totalCapitalInjected: Math.round(tci) });
     }
-
-    return { data, monthlyPayment, totalAcqCost, loanAmount };
+    return { data: data, monthlyPayment: monthlyPayment, totalAcqCost: totalAcqCost, loanAmount: loanAmount };
   }
 
-  // ===== Format helpers =====
   function fmtEur(v) {
-    const abs = Math.abs(v).toLocaleString('de-DE', {
-      maximumFractionDigits: 0,
-    });
+    var abs = Math.abs(v).toLocaleString('de-DE', { maximumFractionDigits: 0 });
     return (v < 0 ? '−€' : '€') + abs;
   }
-
-  function fmtPercent(v) {
-    return v.toFixed(1) + '%';
+  function fmtPercent(v) { return v.toFixed(1) + '%'; }
+  function fmtEurPerMonth(v) { return fmtEur(v) + '/月'; }
+  function findBreakEvenYear(data) {
+    for (var i = 0; i < data.length; i++) { if (data[i].netWorth >= 0) return data[i].year; }
+    return null;
   }
-
-  function fmtEurPerYear(v) {
-    return fmtEur(v) + '/年';
-  }
-
-  function fmtEurPerMonth(v) {
-    return fmtEur(v) + '/月';
-  }
-
-  // ===== Render KPI Cards =====
   function renderKPI(data, monthlyPayment, totalAcqCost) {
-    const last = data[data.length - 1];
-    const first = data[0];
-
-    // === Profit & ROI ===
-    // Profit = net worth at end - net worth at start
-    // At start (year 0): netWorth = purchasePrice - totalAcqCost = -transactionCosts (negative)
-    // At end: netWorth = propertyEquity + cumulativeCashflow
-    // profit = netWorth[N] - netWorth[0] = netWorth[N] + transactionCosts
-    const profit = last.netWorth - first.netWorth;
-
-    // Total capital user ever put in from their own pocket:
-    // downPayment (year 0) + any annual cash deficits covered
-    const totalCapital = last.totalCapitalInjected;
-
-    const years = data.length - 1;
-
-    // Simple ROI = profit / totalCapital * 100
-    const simpleROI = totalCapital > 0 ? (profit / totalCapital) * 100 : 0;
-
-    // Annualized ROI = (1 + totalROI)^(1/years) - 1
-    let annualROI = 0;
-    if (years > 0 && totalCapital > 0) {
-      const totalReturnFactor = 1 + simpleROI / 100;
-      annualROI = totalReturnFactor > 0
-        ? (Math.pow(totalReturnFactor, 1 / years) - 1) * 100
-        : 0;
-    }
-
-    // Break-even year: when netWorth >= 0
-    let breakEvenYear = '—';
-    for (let i = 0; i < data.length; i++) {
-      if (data[i].netWorth >= 0) {
-        breakEvenYear = data[i].year;
-        break;
-      }
-    }
-
-    // Update KPIs
+    var last = data[data.length - 1], first = data[0];
+    var profit = last.netWorth - first.netWorth;
+    var tc = last.totalCapitalInjected, years = data.length - 1;
+    var sr = tc > 0 ? (profit / tc) * 100 : 0;
+    var ar = 0;
+    if (years > 0 && tc > 0) { var f = 1 + sr / 100; ar = f > 0 ? (Math.pow(f, 1 / years) - 1) * 100 : 0; }
+    var be = findBreakEvenYear(data);
     setKPI('kpiTotalInvestment', fmtEur(totalAcqCost));
     setKPI('kpiMonthlyPayment', fmtEurPerMonth(monthlyPayment));
-    setKPI('kpiAnnualROI', fmtPercent(annualROI), annualROI >= 0 ? 'positive' : 'negative');
-    setKPI('kpiBreakEvenYear', String(breakEvenYear));
+    setKPI('kpiAnnualROI', fmtPercent(ar), ar >= 0 ? 'positive' : 'negative');
+    setKPI('kpiBreakEvenYear', be !== null ? '第 ' + be + ' 年' : '未达到');
     setKPI('kpiFinalEquity', fmtEur(last.equity), last.equity >= 0 ? 'positive' : 'negative');
     setKPI('kpiTotalReturn', fmtEur(last.netWorth), last.netWorth >= 0 ? 'positive' : 'negative');
   }
-
   function setKPI(id, value, cls) {
-    const el = document.getElementById(id);
+    var el = document.getElementById(id);
     if (!el) return;
     el.textContent = value;
     el.className = 'kpi-value' + (cls ? ' ' + cls : '');
   }
+  var breakEvenPlugin = {
+    id: 'breakEvenLine',
+    afterDraw: function (chart) {
+      var yr = chart.options.plugins && chart.options.plugins.breakEvenLine && chart.options.plugins.breakEvenLine.year;
+      if (yr == null) return;
+      var meta = chart.getDatasetMeta(3);
+      if (!meta || !meta.data || meta.data.length === 0 || yr < 0 || yr >= meta.data.length) return;
+      var ctx = chart.ctx, xs = chart.scales.x, ys = chart.scales.y;
+      var x = xs.getPixelForValue(yr);
+      ctx.save();
+      ctx.beginPath(); ctx.setLineDash([6, 4]); ctx.strokeStyle = COLORS.breakEven; ctx.lineWidth = 2;
+      ctx.moveTo(x, ys.top); ctx.lineTo(x, ys.bottom); ctx.stroke(); ctx.setLineDash([]);
+      var label = '✨ 第 ' + yr + ' 年';
+      ctx.font = 'bold 12px Inter, system-ui, sans-serif';
+      var tw = ctx.measureText(label).width, ly = ys.top - 10;
+      ctx.fillStyle = COLORS.breakEven + '22'; ctx.beginPath();
+      ctx.roundRect(x - tw / 2 - 8, ly - 14, tw + 16, 22, 6); ctx.fill();
+      ctx.strokeStyle = COLORS.breakEven; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = COLORS.breakEven; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(label, x, ly - 3);
+      var pt = meta.data[yr];
+      if (pt) {
+        ctx.beginPath(); ctx.fillStyle = COLORS.breakEven;
+        ctx.moveTo(pt.x, pt.y - 6); ctx.lineTo(pt.x - 7, pt.y - 20); ctx.lineTo(pt.x + 7, pt.y - 20);
+        ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff'; ctx.fill();
+        ctx.strokeStyle = COLORS.breakEven; ctx.lineWidth = 2.5; ctx.stroke();
+      }
+      ctx.restore();
+    },
+  };
+  Chart.register(breakEvenPlugin);
 
-  // ===== Render Chart =====
   function renderChart(data) {
-    const labels = data.map((d) => (d.year === 0 ? '0 (买入)' : String(d.year)));
-
-    const datasets = [
-      {
-        label: '累计净现金流 (Kum. Cashflow)',
-        data: data.map((d) => d.cumulativeCashflow),
-        borderColor: COLORS.cashflow,
-        backgroundColor: COLORS.cashflow + '20',
-        fill: false,
-        tension: 0.3,
-        pointRadius: 2,
-        borderWidth: 2,
-      },
-      {
-        label: '房屋净值 (Eigenkapital)',
-        data: data.map((d) => d.equity),
-        borderColor: COLORS.equity,
-        backgroundColor: COLORS.equity + '20',
-        fill: false,
-        tension: 0.3,
-        pointRadius: 2,
-        borderWidth: 2,
-      },
-      {
-        label: '剩余贷款 (Restschuld)',
-        data: data.map((d) => d.remainingLoan),
-        borderColor: COLORS.debt,
-        backgroundColor: COLORS.debt + '20',
-        fill: false,
-        tension: 0.3,
-        pointRadius: 2,
-        borderWidth: 2,
-        borderDash: [5, 5],
-      },
-      {
-        label: '总净资产 (Gesamtvermögen)',
-        data: data.map((d) => d.netWorth),
-        borderColor: COLORS.propertyValue,
-        backgroundColor: COLORS.propertyValue + '20',
-        fill: false,
-        tension: 0.3,
-        pointRadius: 2,
-        borderWidth: 2.5,
-      },
+    var bey = findBreakEvenYear(data);
+    var labels = data.map(function(d) { return d.year === 0 ? '0 (买入)' : String(d.year); });
+    var isDark = document.body.getAttribute('data-theme') !== 'light';
+    var gc = isDark ? '#1e293b' : '#e2e8f0';
+    var tc = isDark ? '#64748b' : '#64748b';
+    var tlc = isDark ? '#94a3b8' : '#475569';
+    var lc = isDark ? '#94a3b8' : '#334155';
+    var datasets = [
+      { label: '累计净现金流 (Kum. Cashflow)', data: data.map(function(d){return d.cumulativeCashflow;}), borderColor: COLORS.cashflow, fill: false, tension: 0.3, pointRadius: 2, borderWidth: 2 },
+      { label: '房屋净值 (Eigenkapital)', data: data.map(function(d){return d.equity;}), borderColor: COLORS.equity, fill: false, tension: 0.3, pointRadius: 2, borderWidth: 2 },
+      { label: '剩余贷款 (Restschuld)', data: data.map(function(d){return d.remainingLoan;}), borderColor: COLORS.debt, fill: false, tension: 0.3, pointRadius: 2, borderWidth: 2, borderDash: [5,5] },
+      { label: '总净资产 (Gesamtvermögen)', data: data.map(function(d){return d.netWorth;}), borderColor: COLORS.propertyValue, fill: false, tension: 0.3, pointRadius: 2, borderWidth: 2.5 },
     ];
-
-    const config = {
-      type: 'line',
-      data: { labels, datasets },
+    var config = {
+      type: 'line', data: { labels: labels, datasets: datasets },
       options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 1.6,
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
+        responsive: true, maintainAspectRatio: true, aspectRatio: 1.6,
+        interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              color: '#94a3b8',
-              boxWidth: 14,
-              padding: 16,
-              font: { family: 'Inter', size: 11 },
-            },
-          },
+          legend: { position: 'bottom', labels: { color: lc, boxWidth: 14, padding: 16, font: { family: 'Inter', size: 11 } } },
           tooltip: {
-            backgroundColor: '#1e293b',
-            borderColor: '#475569',
-            borderWidth: 1,
-            padding: 10,
-            bodyFont: { family: 'Inter', size: 12 },
-            callbacks: {
-              label: function (ctx) {
-                return ctx.dataset.label + ': ' + fmtEur(ctx.raw);
-              },
-            },
+            backgroundColor: isDark ? '#1e293b' : '#ffffff', borderColor: isDark ? '#475569' : '#cbd5e1',
+            borderWidth: 1, padding: 10,
+            titleFont: { family: 'Inter', size: 12 }, bodyFont: { family: 'Inter', size: 12 },
+            titleColor: isDark ? '#f1f5f9' : '#1e293b', bodyColor: isDark ? '#94a3b8' : '#475569',
+            callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + fmtEur(ctx.raw); } },
           },
+          breakEvenLine: { year: bey },
         },
         scales: {
-          x: {
-            title: {
-              display: true,
-              text: '年份 (Jahr)',
-              color: '#94a3b8',
-              font: { family: 'Inter', size: 12 },
-            },
-            ticks: {
-              color: '#64748b',
-              font: { family: 'Inter', size: 11 },
-            },
-            grid: { color: '#1e293b' },
-          },
-          y: {
-            title: {
-              display: true,
-              text: '金额 (€)',
-              color: '#94a3b8',
-              font: { family: 'Inter', size: 12 },
-            },
-            ticks: {
-              color: '#64748b',
-              font: { family: 'Inter', size: 11 },
-              callback: function (v) {
-                if (Math.abs(v) >= 1000000) return (v / 1000000).toFixed(1) + 'M';
-                if (Math.abs(v) >= 1000) return (v / 1000).toFixed(0) + 'k';
-                return v;
-              },
-            },
-            grid: { color: '#1e293b' },
-          },
+          x: { title: { display: true, text: '年份 (Jahr)', color: tlc, font: { family: 'Inter', size: 12 } }, ticks: { color: tc, font: { family: 'Inter', size: 11 } }, grid: { color: gc } },
+          y: { title: { display: true, text: '金额 (€)', color: tlc, font: { family: 'Inter', size: 12 } },
+            ticks: { color: tc, font: { family: 'Inter', size: 11 }, callback: function(v) { if (Math.abs(v)>=1e6) return (v/1e6).toFixed(1)+'M'; if (Math.abs(v)>=1000) return (v/1e3).toFixed(0)+'k'; return v; } },
+            grid: { color: gc } },
         },
       },
     };
-
-
-    if (chartInstance) {
-      chartInstance.destroy();
-    }
-
+    if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(chartCanvas, config);
   }
-
-  // ===== Render Data Table =====
   function renderTable(data) {
-    const thead = document.querySelector('#dataTable thead');
-    const tbody = document.querySelector('#dataTable tbody');
+    var thead = document.querySelector('#dataTable thead');
+    var tbody = document.querySelector('#dataTable tbody');
     if (!thead || !tbody) return;
-
-    const columns = [
-      { key: 'year', label: '年份' },
-      { key: 'propertyValue', label: '房价' },
-      { key: 'remainingLoan', label: '剩余贷款' },
-      { key: 'equity', label: '房屋净值' },
-      { key: 'cumulativeCashflow', label: '累计现金流' },
-      { key: 'netWorth', label: '总净资产' },
-      { key: 'rent', label: '租金收入' },
-      { key: 'loanInterest', label: '贷款利息' },
-      { key: 'loanRepayment', label: '本金偿还' },
-      { key: 'netCashflow', label: '年度净现金流' },
+    var cols = [
+      { key: 'year', label: '年份' }, { key: 'propertyValue', label: '房价' },
+      { key: 'remainingLoan', label: '剩余贷款' }, { key: 'equity', label: '房屋净值' },
+      { key: 'cumulativeCashflow', label: '累计现金流' }, { key: 'netWorth', label: '总净资产' },
+      { key: 'rent', label: '租金收入' }, { key: 'loanInterest', label: '贷款利息' },
+      { key: 'loanRepayment', label: '本金偿还' }, { key: 'netCashflow', label: '年度净现金流' },
     ];
-
-    // Header
-    thead.innerHTML =
-      '<tr>' +
-      columns
-        .map((c) => `<th>${c.label}</th>`)
-        .join('') +
-      '</tr>';
-
-    // Body
-    tbody.innerHTML = data
-      .map((row) => {
-        const vals = columns.map((c) => {
-          const v = row[c.key];
-          if (c.key === 'year') return String(v);
-          return fmtEur(v);
-        });
-        return '<tr>' + vals.map((v) => `<td>${v}</td>`).join('') + '</tr>';
-      })
-      .join('');
+    thead.innerHTML = '<tr>' + cols.map(function(c){return '<th>'+c.label+'</th>';}).join('') + '</tr>';
+    tbody.innerHTML = data.map(function(row) {
+      return '<tr>' + cols.map(function(c) {
+        var v = row[c.key];
+        return '<td>' + (c.key === 'year' ? String(v) : fmtEur(v)) + '</td>';
+      }).join('') + '</tr>';
+    }).join('');
   }
-
-  // ===== Main =====
   function run() {
-    const inp = getInputs();
-
-    // Validation
+    var inp = getInputs();
     if (inp.downPayment >= inp.purchasePrice * (1 + inp.grunderwerbsteuer + inp.notar + inp.makler)) {
       alert('首付金额超过总购房成本！请减少首付或增加房屋价格。');
       return;
     }
-
-    const result = calculate(inp);
-    const { data, monthlyPayment, totalAcqCost } = result;
-
-    renderKPI(data, monthlyPayment, totalAcqCost);
-    renderChart(data);
-    renderTable(data);
+    var result = calculate(inp);
+    renderKPI(result.data, result.monthlyPayment, result.totalAcqCost);
+    renderChart(result.data);
+    renderTable(result.data);
   }
-
-  // ===== Boot =====
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  form.addEventListener('submit', function(e) { e.preventDefault(); run(); });
+  document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    bindNumberFormatting();
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     run();
   });
-
-  // Run on page load
-  document.addEventListener('DOMContentLoaded', run);
 })();
