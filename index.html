@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ImmoCalculator — 德国投资公寓收益计算器</title>
+  <title>ImmoCalculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,270 +11,263 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <header>
+
+  <header id="mainHeader">
     <div class="header-content">
       <div class="header-left">
         <h1>🏠 ImmoCalculator</h1>
-        <p class="subtitle">德国投资公寓收益周期曲线模拟器</p>
+        <p class="subtitle">徿图投资公寓收益周期曲线模拟器</p>
       </div>
-      <button id="themeToggle" class="theme-toggle" aria-label="切换主题">
-        <span class="icon-sun">☀️</span>
-        <span class="icon-moon">🌙</span>
-      </button>
+      <div class="header-kpi">
+        <div class="h-kpi">
+          <span class="h-kpi-label">年化 ROI</span>
+          <span class="h-kpi-value" id="hdrKpiAnnualROI">—</span>
+        </div>
+        <div class="h-kpi">
+          <span class="h-kpi-label">盈亏平衡</span>
+          <span class="h-kpi-value" id="hdrKpiBreakEven">—</span>
+        </div>
+        <div class="h-kpi">
+          <span class="h-kpi-label">终期净资产</span>
+          <span class="h-kpi-value" id="hdrKpiFinalEquity">—</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="headerCalcBtn" class="btn-calc">📈 计算</button>
+        <button id="themeToggle" class="theme-toggle" aria-label="切换主题">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+      </div>
     </div>
   </header>
 
   <main>
     <div class="layout">
-      <!-- 左侧：输入面板 -->
       <aside class="input-panel">
         <form id="calcForm">
-          <!-- 房屋参数 -->
+
           <fieldset>
             <legend>📋 房屋参数</legend>
             <div class="field-row">
-              <label>
-                <span class="label-text">购买价格 <small>(Kaufpreis)</small></span>
+              <label><span class="label-text">购买价格 <small>(Kaufpreis)</small></span>
                 <div class="input-group">
-                  <input type="text" id="purchasePrice" value="450000" min="10000" step="1000" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="purchasePrice" value="450000" min="10000" max="10000000" step="1000" required inputmode="numeric" data-format="euro">
+                  <button type="button" class="btn-range" data-param="purchasePrice" title="参数范围优化">🎚️</button>
                   <span class="suffix">€</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">年增值率 <small>(Wertsteigerung)</small></span>
+              <label><span class="label-text">年增值率 <small>(Wertsteigerung)</small></span>
                 <div class="input-group">
-                  <input type="number" id="appreciationRate" value="2" min="0" max="20" step="0.1" required>
+                  <input type="number" id="appreciationRate" value="2" min="0" max="20" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="appreciationRate" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">月租金 (Kaltmiete)</span>
+              <label><span class="label-text">月租金 (Kaltmiete)</span>
                 <div class="input-group">
-                  <input type="text" id="monthlyRent" value="1200" min="0" step="50" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="monthlyRent" value="1200" min="0" max="100000" step="50" required inputmode="numeric" data-format="euro">
+                  <button type="button" class="btn-range" data-param="monthlyRent" title="参数范围优化">🎚️</button>
                   <span class="suffix">€</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">年租金涨幅</span>
+              <label><span class="label-text">年租金涨幅</span>
                 <div class="input-group">
-                  <input type="number" id="rentIncrease" value="1" min="0" max="20" step="0.1" required>
-                  <span class="suffix">%</span>
-                </div>
-              </label>
-            </div>
-          </fieldset>
-
-          <!-- 交易成本 -->
-          <fieldset>
-            <legend>💰 交易成本</legend>
-            <div class="field-row">
-              <label>
-                <span class="label-text">Grunderwerbsteuer</span>
-                <div class="input-group">
-                  <input type="number" id="grunderwerbsteuer" value="3.5" min="0" max="10" step="0.1" required>
+                  <input type="number" id="rentIncrease" value="1" min="0" max="20" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="rentIncrease" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">Notar + Grundbuch</span>
+              <label><span class="label-text">Grunderwerbsteuer</span>
                 <div class="input-group">
-                  <input type="number" id="notar" value="2.0" min="0" max="5" step="0.1" required>
+                  <input type="number" id="grunderwerbsteuer" value="3.5" min="0" max="10" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="grunderwerbsteuer" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">Makler (Maklergebühr)</span>
+              <label><span class="label-text">Notar + Grundbuch</span>
                 <div class="input-group">
-                  <input type="number" id="makler" value="3.57" min="0" max="10" step="0.01" required>
+                  <input type="number" id="notar" value="2.0" min="0" max="5" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="notar" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
-          </fieldset>
-
-          <!-- 贷款参数 -->
-          <fieldset>
-            <legend>🏦 贷款参数 <small>Annuitätendarlehen</small></legend>
             <div class="field-row">
-              <label>
-                <span class="label-text">首付 (Eigenkapital)</span>
+              <label><span class="label-text">Makler (Maklergebühr)</span>
                 <div class="input-group">
-                  <input type="text" id="downPayment" value="60000" min="0" step="5000" required inputmode="numeric" data-format="euro">
+                  <input type="number" id="makler" value="3.57" min="0" max="10" step="0.01" required >
+                  <button type="button" class="btn-range" data-param="makler" title="参数范围优化">🎚️</button>
+                  <span class="suffix">%</span>
+                </div>
+              </label>
+            </div>
+            <div class="field-row">
+              <label><span class="label-text">首付 (Eigenkapital)</span>
+                <div class="input-group">
+                  <input type="text" id="downPayment" value="60000" min="0" max="10000000" step="5000" required inputmode="numeric" data-format="euro">
+                  <button type="button" class="btn-range" data-param="downPayment" title="参数范围优化">🎚️</button>
                   <span class="suffix">€</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">贷款利率 (Sollzins)</span>
+              <label><span class="label-text">贷款利率 (Sollzins)</span>
                 <div class="input-group">
-                  <input type="number" id="interestRate" value="4.0" min="0.1" max="15" step="0.01" required>
+                  <input type="number" id="interestRate" value="4.0" min="0.1" max="15" step="0.01" required >
+                  <button type="button" class="btn-range" data-param="interestRate" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">初始 Tilgung</span>
+              <label><span class="label-text">初始Tilgung</span>
                 <div class="input-group">
-                  <input type="number" id="tilgung" value="2.0" min="0.5" max="20" step="0.1" required>
+                  <input type="number" id="tilgung" value="2.0" min="0.5" max="20" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="tilgung" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
-          </fieldset>
-
-          <!-- 持有成本 -->
-          <fieldset>
-            <legend>🔧 持有成本</legend>
             <div class="field-row">
-              <label>
-                <span class="label-text">Hausgeld <small>(非分摊部分)</small></span>
+              <label><span class="label-text">Hausgeld <small>(非分摊部分)</small></span>
                 <div class="input-group">
-                  <input type="text" id="hausgeld" value="150" min="0" step="10" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="hausgeld" value="150" min="0" max="10000" step="10" required inputmode="numeric" data-format="euro">
+                  <button type="button" class="btn-range" data-param="hausgeld" title="参数范围优化">🎚️</button>
                   <span class="suffix">€/月</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">Grundsteuer</span>
+              <label><span class="label-text">Grundsteuer</span>
                 <div class="input-group">
-                  <input type="text" id="grundsteuer" value="400" min="0" step="20" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="grundsteuer" value="400" min="0" max="10000" step="20" required inputmode="numeric" data-format="euro">
+                  <button type="button" class="btn-range" data-param="grundsteuer" title="参数范围优化">🎚️</button>
                   <span class="suffix">€/年</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">房屋保险 <small>(Wohngebäude)</small></span>
+              <label><span class="label-text">房屋保险 <small>(Wohngebäude)</small></span>
                 <div class="input-group">
-                  <input type="text" id="insurance" value="300" min="0" step="20" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="insurance" value="300" min="0" max="10000" step="20" required inputmode="numeric" data-format="euro">
+                  <button type="button" class="btn-range" data-param="insurance" title="参数范围优化">🎚️</button>
                   <span class="suffix">€/年</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">维修/翻新储备</span>
+              <label><span class="label-text">维修/翻新储备</span>
                 <div class="input-group">
-                  <input type="number" id="maintenanceRate" value="1.5" min="0" max="5" step="0.1" required>
+                  <input type="number" id="maintenanceRate" value="1.5" min="0" max="5" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="maintenanceRate" title="参数范围优化">🎚️</button>
                   <span class="suffix">%/年</span>
                 </div>
               </label>
             </div>
-          </fieldset>
-
-          <!-- 税务 -->
-          <fieldset>
-            <legend>📊 税务参数 <small>(可选)</small></legend>
             <div class="field-row">
-              <label>
-                <span class="label-text">个人所得税率</span>
+              <label><span class="label-text">个人所得税率</span>
                 <div class="input-group">
-                  <input type="number" id="taxRate" value="42" min="0" max="50" step="1" required>
+                  <input type="number" id="taxRate" value="42" min="0" max="50" step="1" required >
+                  <button type="button" class="btn-range" data-param="taxRate" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">AfA (折旧率)</span>
+              <label><span class="label-text">AfA (折旧率)</span>
                 <div class="input-group">
-                  <input type="number" id="afaRate" value="2.0" min="0" max="10" step="0.1" required>
+                  <input type="number" id="afaRate" value="2.0" min="0" max="10" step="0.1" required >
+                  <button type="button" class="btn-range" data-param="afaRate" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
-              <label>
-                <span class="label-text">建筑占房价比例</span>
+              <label><span class="label-text">建筑占房价比例</span>
                 <div class="input-group">
-                  <input type="number" id="buildingRatio" value="80" min="0" max="100" step="1" required>
+                  <input type="number" id="buildingRatio" value="80" min="0" max="100" step="1" required >
+                  <button type="button" class="btn-range" data-param="buildingRatio" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
               </label>
             </div>
-          </fieldset>
-
-          <!-- 模拟周期 -->
-          <fieldset>
-            <legend>⏱ 模拟周期</legend>
             <div class="field-row">
-              <label>
-                <span class="label-text">持有年限</span>
+              <label><span class="label-text">持有年限</span>
                 <div class="input-group">
-                  <input type="number" id="holdingPeriod" value="20" min="1" max="60" step="1" required>
+                  <input type="number" id="holdingPeriod" value="20" min="1" max="60" step="1" required >
+                  <button type="button" class="btn-range" data-param="holdingPeriod" title="参数范围优化">🎚️</button>
                   <span class="suffix">年</span>
                 </div>
               </label>
             </div>
-          </fieldset>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-primary">📈 计算并更新图表</button>
-          </div>
         </form>
       </aside>
 
-      <!-- 右侧：结果 -->
       <section class="result-panel">
-        <!-- 关键指标 -->
         <div class="kpi-grid">
-          <div class="kpi-card">
-            <span class="kpi-label">总投资额</span>
-            <span class="kpi-value" id="kpiTotalInvestment">—</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">月供 (Annuität)</span>
-            <span class="kpi-value" id="kpiMonthlyPayment">—</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">年化 ROI</span>
-            <span class="kpi-value" id="kpiAnnualROI">—</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">盈亏平衡年</span>
-            <span class="kpi-value" id="kpiBreakEvenYear">—</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">终期净资产</span>
-            <span class="kpi-value" id="kpiFinalEquity">—</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">总净资产 (Gesamtvermögen)</span>
-            <span class="kpi-value" id="kpiTotalReturn">—</span>
-          </div>
+          <div class="kpi-card"><span class="kpi-label">总投资额</span><span class="kpi-value" id="kpiTotalInvestment">—</span></div>
+          <div class="kpi-card"><span class="kpi-label">月供 (Annuität)</span><span class="kpi-value" id="kpiMonthlyPayment">—</span></div>
+          <div class="kpi-card"><span class="kpi-label">年化 ROI</span><span class="kpi-value" id="kpiAnnualROI">—</span></div>
+          <div class="kpi-card"><span class="kpi-label">盈亏平衡年</span><span class="kpi-value" id="kpiBreakEvenYear">—</span></div>
+          <div class="kpi-card"><span class="kpi-label">终期净资产</span><span class="kpi-value" id="kpiFinalEquity">—</span></div>
+          <div class="kpi-card"><span class="kpi-label">总净资产</span><span class="kpi-value" id="kpiTotalReturn">—</span></div>
         </div>
 
-        <!-- 图表 -->
         <div class="chart-container">
           <canvas id="chart"></canvas>
         </div>
 
-        <!-- 年度数据明细表 -->
         <div class="table-wrapper">
           <h3>📋 年度明细表</h3>
           <div id="tableContainer" style="overflow-x: auto;">
-            <table id="dataTable">
-              <thead></thead>
-              <tbody></tbody>
-            </table>
+            <table id="dataTable"><thead></thead><tbody></tbody></table>
           </div>
         </div>
       </section>
     </div>
   </main>
+
+  <div id="rangeModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">🎚️ 参数范围优化</h3>
+        <button type="button" class="modal-close" id="modalCloseBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint" id="modalHint">调节范围后点击“优化计算”</p>
+        <div class="modal-current">
+          <span class="modal-cur-label">当前值：</span>
+          <span id="modalCurrentVal" class="modal-cur-value"></span>
+        </div>
+        <div class="modal-range-inputs">
+          <div class="modal-range-field">
+            <label>🟢 最小值</label>
+            <input type="number" id="modalMin" step="any">
+          </div>
+          <div class="modal-range-field">
+            <label>🔴 最大值</label>
+            <input type="number" id="modalMax" step="any">
+          </div>
+        </div>
+        <div class="modal-optimize-result" id="modalOptResult" style="display:none;">
+          <span id="modalOptVal" class="opt-value"></span>
+          <span id="modalOptNote" class="opt-note"></span>
+        </div>
+        <button type="button" class="btn-primary btn-optimize" id="modalOptimizeBtn">🔭 优化计算</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <p>ImmoCalculator — 仅供投资参考，不构成财务建议。</p>
