@@ -31,6 +31,7 @@
 - 多语言界面：中文 / Deutsch / English，覆盖参数名、KPI、图表、表格与弹窗
 - 移动端友好：图表与表格自适应手机竖屏，无横向溢出
 - 税务影响计算（个人所得税、AfA 折旧）
+- 首付上限约束仅在点击“计算”时应用，输入过程不被实时改写
 - 纯前端，部署于 GitHub Pages，无需后端
 
 ### 输入参数
@@ -103,6 +104,7 @@ Eine reine Frontend-SPA zur Simulation und Visualisierung der langfristigen Rend
 - Mehrsprachige Benutzeroberfläche: Chinesisch / Deutsch / Englisch, inkl. Parameter, KPIs, Diagramme, Tabellen und Dialoge
 - Mobilfreundlich: Diagramm und Tabelle passen sich an Smartphones im Hochformat an
 - Steuerliche Effekte (Einkommensteuer, AfA)
+- Die Eigenkapital-Obergrenze wird erst beim Klick auf „Berechnen“ angewendet, Eingaben werden nicht live überschrieben
 - Kein Backend erforderlich, gehostet auf GitHub Pages
 
 ### Eingabeparameter
@@ -172,6 +174,7 @@ A pure frontend SPA for simulating and visualizing the long-term returns of buyi
 - Multilingual UI: Chinese / German / English, covering parameters, KPIs, charts, tables and modals
 - Mobile friendly: charts and tables adapt to portrait phone screens without horizontal overflow
 - Tax impact calculation (income tax, AfA depreciation)
+- The down-payment cap is applied only when Calculate is clicked; inputs are not rewritten live
 - Pure frontend, deployed on GitHub Pages, no backend needed
 
 ### Input Parameters
