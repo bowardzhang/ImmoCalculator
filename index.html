@@ -331,7 +331,23 @@
     </div>
   </div>
 
-    <!-- ===== Share Card (hidden, captured by html2canvas) ===== -->
+    <!-- ===== Share Preview Modal ===== -->
+  <div id="shareModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width:820px;">
+      <div class="modal-header">
+        <h3 id="shareModalTitle">📷 分享图片</h3>
+        <button type="button" class="modal-close" id="shareModalClose">×</button>
+      </div>
+      <div class="modal-body" style="text-align:center;">
+        <img id="sharePreviewImg" style="max-width:100%; border-radius:8px; border:1px solid var(--border);" />
+        <div style="margin-top:1rem;">
+          <button type="button" class="btn-primary" id="shareDownloadBtn" style="width:auto; display:inline-block; padding:0.6rem 2rem;">💾 下载图片</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Share Card (hidden, captured by html2canvas) ===== -->
   <div id="shareCard" style="display:none; position:fixed; left:-9999px; width:800px; background:#1e293b; color:#f1f5f9; padding:2rem; border-radius:12px; font-family:Inter,sans-serif;">
     <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
       <span style="font-size:2rem;">🏠</span>
