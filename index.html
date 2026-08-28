@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -16,7 +17,7 @@
     <div class="header-content">
       <div class="header-left">
         <h1>🏠 ImmoCalculator</h1>
-        <p class="subtitle">徿图投资公寓收益周期曲线模拟器</p>
+        <p class="subtitle lang-subtitle">德国投资公寓收益周期曲线模拟器</p>
       </div>
       <div class="header-kpi">
         <div class="h-kpi">
@@ -33,7 +34,9 @@
         </div>
       </div>
       <div class="header-actions">
-        <button id="headerCalcBtn" class="btn-calc">📈 计算</button>
+        <button id="headerCalcBtn" class="btn-calc lang-calc">📈 计算</button>
+        <button id="shareBtn" class="btn-icon" title="分享图片">📷</button>
+        <button id="langToggle" class="btn-icon">🌐</button>
         <button id="themeToggle" class="theme-toggle" aria-label="切换主题">
           <span class="icon-sun">☀️</span>
           <span class="icon-moon">🌙</span>
@@ -328,8 +331,19 @@
     </div>
   </div>
 
+    <!-- ===== Share Card (hidden, captured by html2canvas) ===== -->
+  <div id="shareCard" style="display:none; position:fixed; left:-9999px; width:800px; background:#1e293b; color:#f1f5f9; padding:2rem; border-radius:12px; font-family:Inter,sans-serif;">
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+      <span style="font-size:2rem;">🏠</span>
+      <div><div style="font-size:1.4rem; font-weight:700;">ImmoCalculator</div>
+      <div id="shareDate" style="font-size:0.8rem; color:#94a3b8;"></div></div>
+    </div>
+    <div id="shareInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; font-size:0.85rem; margin-bottom:1.5rem;"></div>
+    <div id="shareResults" style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem;"></div>
+  </div>
+
   <footer>
-    <p>ImmoCalculator — 仅供投资参考，不构成财务建议。</p>
+    <p class="lang-footer">ImmoCalculator — 仅供投资参考，不构成财务建议。</p>
   </footer>
 
   <script src="script.js"></script>

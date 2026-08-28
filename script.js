@@ -43,10 +43,160 @@
 
   form.addEventListener('submit',function(e){e.preventDefault();run();});
   document.getElementById('headerCalcBtn').addEventListener('click',function(e){e.preventDefault();run();});
-  document.addEventListener('DOMContentLoaded',function(){initTheme();initHeaderScroll();bindNumberFormatting();document.getElementById('themeToggle').addEventListener('click',toggleTheme);document.querySelectorAll('.btn-range').forEach(function(b){b.addEventListener('click',function(){openModal(b.dataset.param);});});document.getElementById('modalCloseBtn').addEventListener('click',closeModal);document.getElementById('rangeModal').addEventListener('click',function(e){if(e.target===this)closeModal();});document.getElementById('modalOptimizeBtn').addEventListener('click',function(){saveCurrentRanges();var md=document.getElementById('rangeModal'),pid=md.dataset.param,u=md.dataset.unit;var mn=parseFloat(document.getElementById('modalMin').value)||0;var mx=parseFloat(document.getElementById('modalMax').value)||100;if(mn>=mx){alert('最小值必须小于最大值');return;}var res=optimizeParam(pid,mn,mx);var me=paramMeta[pid];var dv=me.min>=1?Math.round(res.value):res.value.toFixed(me.step<0.1?2:1);document.getElementById('modalOptVal').textContent='最优值：'+dv+' '+u;document.getElementById('modalOptNote').textContent='对应总净资产：'+fmtEur(res.netWorth);document.getElementById('modalOptResult').style.display='block';});
+  document.addEventListener('DOMContentLoaded',function(){initTheme();initHeaderScroll();bindNumberFormatting();applyLang();document.getElementById('themeToggle').addEventListener('click',toggleTheme);document.getElementById('langToggle').addEventListener('click',toggleLang);document.getElementById('shareBtn').addEventListener('click',buildShareCard);document.querySelectorAll('.btn-range').forEach(function(b){b.addEventListener('click',function(){openModal(b.dataset.param);});});document.getElementById('modalCloseBtn').addEventListener('click',closeModal);document.getElementById('rangeModal').addEventListener('click',function(e){if(e.target===this)closeModal();});document.getElementById('modalOptimizeBtn').addEventListener('click',function(){saveCurrentRanges();var md=document.getElementById('rangeModal'),pid=md.dataset.param,u=md.dataset.unit;var mn=parseFloat(document.getElementById('modalMin').value)||0;var mx=parseFloat(document.getElementById('modalMax').value)||100;if(mn>=mx){alert(t('alert_range'));return;}var res=optimizeParam(pid,mn,mx);var me=paramMeta[pid];var dv=me.min>=1?Math.round(res.value):res.value.toFixed(me.step<0.1?2:1);document.getElementById('modalOptVal').textContent=tf('modal_optval',dv,u);document.getElementById('modalOptNote').textContent=tf('modal_optnw',fmtEur(res.netWorth));document.getElementById('modalOptResult').style.display='block';});
 document.getElementById('modalMin').addEventListener('input',saveCurrentRanges);
 document.getElementById('modalMax').addEventListener('input',saveCurrentRanges);
 document.getElementById('purchasePrice').addEventListener('input',function(){clampDownPayment();});
 document.getElementById('downPayment').addEventListener('input',function(){clampDownPayment();});
 run();});
+
+  // ============================
+  // i18n — Multi-Language
+  // ============================
+  var LANG_DATA = {};
+  LANG_DATA['cn'] = {
+    calc:'计算', subtitle:'德国投资公寓收益周期曲线模拟器',
+    footer:'ImmoCalculator — 仅供投资参考，不构成财务建议。',
+    kpi_inv:'总投资额',kpi_monthly:'月供',kpi_roi:'年化 ROI',kpi_be:'盈亏平衡年',kpi_finalEq:'终期净资产',kpi_totalNw:'总净资产',
+    hdr_roi:'年化 ROI',hdr_be:'盈亏平衡',hdr_eq:'终期净资产',
+    be_reached:'第{0}年',be_none:'未达到',
+    table_year:'年份',table_pv:'房价',table_rl:'剩余贷款',table_eq:'房屋净值',table_cc:'累计现金流',table_nw:'总净资产',
+    table_rent:'租金收入',table_int:'贷款利息',table_repay:'本金偿还',table_cf:'年度净现金流',
+    chart_cf:'累计净现金流 (Kum. Cashflow)',chart_eq:'房屋净值 (Eigenkapital)',chart_debt:'剩余贷款 (Restschuld)',chart_nw:'总净资产 (Gesamtvermögen)',
+    chart_x:'年份 (Jahr)',chart_y:'金额 (€)',chart_buy:'0 (买入)',chart_be:'✨ 第{0}年',
+    modal_title:'范围优化',modal_hint:'设置范围后点击"优化计算"。',modal_hint_lower:'该参数越低回报越高',modal_hint_higher:'该参数越高回报越高',modal_hint_opt:'有最优值使回报最大',
+    modal_cur:'当前值：',modal_min:'最小值',modal_max:'最大值',modal_opt:'优化计算',
+    modal_optval:'最优值：{0} {1}',modal_optnw:'对应总净资产：{0}',
+    alert_dp:'首付金额超过总购房成本！',alert_range:'最小值必须小于最大值',
+    share_title:'ImmoCalculator 参数与结果',
+    share_save:'保存图片',
+    param_labels:{purchasePrice:'购买价格',appreciationRate:'年增值率',monthlyRent:'月租金',rentIncrease:'年租金涨幅',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Makler',downPayment:'首付',interestRate:'贷款利率',tilgung:'Tilgung',hausgeld:'Hausgeld',grundsteuer:'Grundsteuer',insurance:'房屋保险',maintenanceRate:'维修储备',taxRate:'所得税率',afaRate:'AfA折旧率',buildingRatio:'建筑占比',holdingPeriod:'持有年限'}
+  };
+  LANG_DATA['de'] = {
+    calc:'Berechnen',subtitle:'Rendite-Simulator für Immobilien in DE',
+    footer:'ImmoCalculator — Keine Anlageberatung.',
+    kpi_inv:'Gesamtkosten',kpi_monthly:'Annuität',kpi_roi:'Jährl. ROI',kpi_be:'Break-Even',kpi_finalEq:'Eigenkapital',kpi_totalNw:'Gesamtvermögen',
+    hdr_roi:'Jährl. ROI',hdr_be:'Break-Even',hdr_eq:'Eigenkapital',
+    be_reached:'Jahr {0}',be_none:'N/A',
+    table_year:'Jahr',table_pv:'Preis',table_rl:'Restschuld',table_eq:'EK',table_cc:'Cashflow',table_nw:'Vermögen',
+    table_rent:'Miete',table_int:'Zinsen',table_repay:'Tilgung',table_cf:'Netto-CF',
+    chart_cf:'Kum. Cashflow',chart_eq:'Eigenkapital',chart_debt:'Restschuld',chart_nw:'Gesamtvermögen',
+    chart_x:'Jahr',chart_y:'Betrag (€)',chart_buy:'0 (Kauf)',chart_be:'✨ Jahr {0}',
+    modal_title:'Parameterbereich',modal_hint:'Bereich einstellen und optimieren. ',modal_hint_lower:'Niedriger = besser',modal_hint_higher:'Höher = besser',modal_hint_opt:'Optimaler Wert vorhanden',
+    modal_cur:'Aktuell: ',modal_min:'Minimum',modal_max:'Maximum',modal_opt:'Optimieren',
+    modal_optval:'Optimal: {0} {1}',modal_optnw:'Vermögen: {0}',
+    alert_dp:'EK übersteigt Gesamtkosten!',alert_range:'Min < Max erforderlich',
+    share_title:'ImmoCalculator — Parameter & Ergebnisse',
+    share_save:'Bild speichern',
+    param_labels:{purchasePrice:'Kaufpreis',appreciationRate:'Wertsteigerung',monthlyRent:'Kaltmiete',rentIncrease:'Mietsteigerung',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Makler',downPayment:'Eigenkapital',interestRate:'Sollzins',tilgung:'Tilgung',hausgeld:'Hausgeld',grundsteuer:'Grundsteuer',insurance:'Versicherung',maintenanceRate:'Instandhaltung',taxRate:'Steuersatz',afaRate:'AfA',buildingRatio:'Gebäudeanteil',holdingPeriod:'Haltedauer'}
+  };
+  LANG_DATA['en'] = {
+    calc:'Calculate',subtitle:'German Investment Property ROI Simulator',
+    footer:'ImmoCalculator — Not financial advice.',
+    kpi_inv:'Total Cost',kpi_monthly:'Ann. Payment',kpi_roi:'Annual ROI',kpi_be:'Break-Even',kpi_finalEq:'Final Equity',kpi_totalNw:'Net Worth',
+    hdr_roi:'Annual ROI',hdr_be:'Break-Even',hdr_eq:'Final Equity',
+    be_reached:'Year {0}',be_none:'N/A',
+    table_year:'Year',table_pv:'Value',table_rl:'Rem. Debt',table_eq:'Equity',table_cc:'Cum. CF',table_nw:'Net Worth',
+    table_rent:'Rent',table_int:'Interest',table_repay:'Repayment',table_cf:'Net CF',
+    chart_cf:'Cum. Cashflow',chart_eq:'Equity',chart_debt:'Rem. Debt',chart_nw:'Net Worth',
+    chart_x:'Year',chart_y:'Amount (€)',chart_buy:'0 (Purchase)',chart_be:'✨ Year {0}',
+    modal_title:'Range Opt.',modal_hint:'Set range and optimize. ',modal_hint_lower:'Lower = better',modal_hint_higher:'Higher = better',modal_hint_opt:'Optimal value exists',
+    modal_cur:'Current: ',modal_min:'Minimum',modal_max:'Maximum',modal_opt:'Optimize',
+    modal_optval:'Optimal: {0} {1}',modal_optnw:'Net Worth: {0}',
+    alert_dp:'DP exceeds total cost!',alert_range:'Min must be < Max',
+    share_title:'ImmoCalculator — Parameters & Results',
+    share_save:'Save Image',
+    param_labels:{purchasePrice:'Purchase Price',appreciationRate:'Appreciation',monthlyRent:'Monthly Rent',rentIncrease:'Rent Increase',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Broker Fee',downPayment:'Down Payment',interestRate:'Interest Rate',tilgung:'Repayment',hausgeld:'Hausgeld',grundsteuer:'Property Tax',insurance:'Insurance',maintenanceRate:'Maintenance',taxRate:'Tax Rate',afaRate:'AfA Deprec.',buildingRatio:'Building %',holdingPeriod:'Holding Period'}
+  };
+
+  var lang = localStorage.getItem('immo-lang') || 'cn';
+  function t(key) { var d = LANG_DATA[lang], p = key.split('.'), v = d; for (var i=0; i<p.length; i++) { v = v[p[i]]; if (v===undefined) return key; } return v; }
+  function tf(key) { var s = t(key); for (var i=1; i<arguments.length; i++) s = s.replace('{'+(i-1)+'}', String(arguments[i])); return s; }
+
+  function applyLang() {
+    var d = LANG_DATA[lang];
+    if (!d) return;
+    document.querySelector('.lang-calc').textContent = '📈 ' + d.calc;
+    document.querySelector('.lang-subtitle').textContent = d.subtitle;
+    document.querySelector('.lang-footer').textContent = d.footer;
+    if (chartInstance) run();
+  }
+
+  function toggleLang() {
+    var langs = ['cn','de','en'];
+    var idx = langs.indexOf(lang);
+    lang = langs[(idx + 1) % 3];
+    localStorage.setItem('immo-lang', lang);
+    applyLang();
+  }
+
+  // ============================
+  // Share — Generate PNG Image
+  // ============================
+  function buildShareCard() {
+    var inp = getInputs();
+    var result = calculate(inp);
+    var data = result.data;
+    var last = data[data.length - 1];
+    var pl = t('param_labels') || {};
+    var dk = LANG_DATA[lang] || {};
+
+    document.getElementById('shareDate').textContent = new Date().toLocaleString(lang==='cn'?'zh-CN':lang==='de'?'de-DE':'en-US');
+
+    var shareIn = document.getElementById('shareInputs');
+    var rows = [];
+    var keys = ['purchasePrice','appreciationRate','monthlyRent','rentIncrease','grunderwerbsteuer','notar','makler','downPayment','interestRate','tilgung','hausgeld','grundsteuer','insurance','maintenanceRate','taxRate','afaRate','buildingRatio','holdingPeriod'];
+    var pctKeys = ['appreciationRate','rentIncrease','grunderwerbsteuer','notar','makler','interestRate','tilgung','maintenanceRate','taxRate','afaRate','buildingRatio'];
+    for (var i=0; i<keys.length; i++) {
+      var k = keys[i];
+      var v = inp[k];
+      if (pctKeys.indexOf(k)>=0) v = (v*100).toFixed(k==='interestRate'||k==='makler'?2:1)+'%';
+      else if (['purchasePrice','monthlyRent','downPayment','hausgeld','grundsteuer','insurance'].indexOf(k)>=0) v = fmtEur(v);
+      else if (k==='holdingPeriod') v = String(Math.round(v));
+      rows.push('<div style="display:flex;justify-content:space-between;padding:0.25rem 0;border-bottom:1px solid #334155;"><span>'+(pl[k]||k)+'</span><span style="font-weight:600;">'+v+'</span></div>');
+    }
+    shareIn.innerHTML = rows.join('');
+
+    var resBox = document.getElementById('shareResults');
+    var profit = last.netWorth - data[0].netWorth;
+    resBox.innerHTML = ''
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_inv||'Investment')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+fmtEur(result.totalAcqCost)+'</div></div>'
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_monthly||'Ann. Payment')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+fmtEur(result.monthlyPayment)+'/月</div></div>'
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_roi||'ROI')+'</div><div style="font-size:1.1rem;font-weight:700;color:#22c55e;">'+fmtPercent(0)+'</div></div>'
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_be||'B/E')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+tf('be_reached',findBreakEvenYear(data)||'')+'</div></div>'
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_finalEq||'Equity')+'</div><div style="font-size:1.1rem;font-weight:700;color:#3b82f6;">'+fmtEur(last.equity)+'</div></div>'
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_totalNw||'Net Worth')+'</div><div style="font-size:1.1rem;font-weight:700;color:'+(last.netWorth>=0?'#22c55e':'#ef4444')+';">'+fmtEur(last.netWorth)+'</div></div>';
+
+    // Show card temporarily for capture
+    var card = document.getElementById('shareCard');
+    card.style.display = 'block';
+    card.style.left = '';
+    card.style.position = 'fixed';
+
+    // Compute ROI again for card
+    var tc = last.totalCapitalInjected;
+    var sr = tc > 0 ? (profit / tc) * 100 : 0;
+    var ar = 0;
+    if (data.length-1 > 0 && tc > 0) { var f = 1 + sr/100; ar = f > 0 ? (Math.pow(f, 1/(data.length-1)) - 1) * 100 : 0; }
+    // Update ROI cell
+    var roiCells = card.querySelectorAll('#shareResults > div');
+    if (roiCells.length >= 3) {
+      var roiVal = roiCells[2].querySelector('div:last-child');
+      if (roiVal) { roiVal.textContent = fmtPercent(ar); roiVal.style.color = ar >= 0 ? '#22c55e' : '#ef4444'; }
+    }
+    // Update B/E cell
+    if (roiCells.length >= 4) {
+      var beVal = roiCells[3].querySelector('div:last-child');
+      if (beVal) beVal.textContent = tf('be_reached', findBreakEvenYear(data) || t('be_none'));
+    }
+
+    html2canvas(card, { backgroundColor:'#1e293b', scale:2, useCORS:true, logging:false }).then(function(canvas) {
+      card.style.display = 'none';
+      card.style.left = '-9999px';
+      var link = document.createElement('a');
+      link.download = 'ImmoCalculator_' + new Date().toISOString().slice(0,10) + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
 })();

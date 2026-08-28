@@ -90,6 +90,15 @@ header.compact .h-kpi-label { font-size: 0.55rem; }
   cursor: pointer; transition: background 0.2s; white-space: nowrap;
 }
 .btn-calc:hover { background: var(--primary-hover); }
+.btn-icon {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-sm); width: 36px; height: 36px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; transition: background 0.2s, transform 0.2s; flex-shrink: 0;
+}
+.btn-icon:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+body[data-theme="light"] .btn-icon { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); }
+body[data-theme="light"] .btn-icon:hover { background: rgba(0,0,0,0.1); }
 
 /* ===== Theme Toggle ===== */
 .theme-toggle {
