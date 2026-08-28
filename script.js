@@ -162,64 +162,29 @@
   // ============================
   // i18n — Multi-Language
   // ============================
-  var LANG_DATA = {};
-  LANG_DATA['cn'] = {
-    calc:'计算', subtitle:'德国投资公寓收益周期曲线模拟器',
-    footer:'ImmoCalculator — 仅供投资参考，不构成财务建议。',
-    kpi_inv:'总投资额',kpi_monthly:'月供',kpi_roi:'年化 ROI',kpi_be:'盈亏平衡年',kpi_finalEq:'终期净资产',kpi_totalNw:'总净资产',
-    hdr_roi:'年化 ROI',hdr_be:'盈亏平衡',hdr_eq:'终期净资产',
-    be_reached:'第{0}年',be_none:'未达到',
-    table_year:'年份',table_pv:'房价',table_rl:'剩余贷款',table_eq:'房屋净值',table_cc:'累计现金流',table_nw:'总净资产',
-    table_rent:'租金收入',table_int:'贷款利息',table_repay:'本金偿还',table_cf:'年度净现金流',
-    chart_cf:'累计净现金流 (Kum. Cashflow)',chart_eq:'房屋净值 (Eigenkapital)',chart_debt:'剩余贷款 (Restschuld)',chart_nw:'总净资产 (Gesamtvermögen)',
-    chart_x:'年份 (Jahr)',chart_y:'金额 (€)',chart_buy:'0 (买入)',chart_be:'✨ 第{0}年',
-    modal_title:'范围优化',modal_hint:'设置范围后点击"优化计算"。',modal_hint_lower:'该参数越低回报越高',modal_hint_higher:'该参数越高回报越高',modal_hint_opt:'有最优值使回报最大',
-    modal_cur:'当前值：',modal_min:'最小值',modal_max:'最大值',modal_opt:'优化计算',
-    modal_optval:'最优值：{0} {1}',modal_optnw:'对应总净资产：{0}',
-    alert_dp:'首付金额超过总购房成本！',alert_range:'最小值必须小于最大值',
-    share_title:'ImmoCalculator 参数与结果',
-    share_save:'保存图片',
-    param_labels:{purchasePrice:'购买价格',appreciationRate:'年增值率',monthlyRent:'月租金',rentIncrease:'年租金涨幅',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Makler',downPayment:'首付',interestRate:'贷款利率',tilgung:'Tilgung',hausgeld:'Hausgeld',grundsteuer:'Grundsteuer',insurance:'房屋保险',maintenanceRate:'维修储备',taxRate:'所得税率',afaRate:'AfA折旧率',buildingRatio:'建筑占比',holdingPeriod:'持有年限'}
-  };
-  LANG_DATA['de'] = {
-    calc:'Berechnen',subtitle:'Rendite-Simulator für Immobilien in DE',
-    footer:'ImmoCalculator — Keine Anlageberatung.',
-    kpi_inv:'Gesamtkosten',kpi_monthly:'Annuität',kpi_roi:'Jährl. ROI',kpi_be:'Break-Even',kpi_finalEq:'Eigenkapital',kpi_totalNw:'Gesamtvermögen',
-    hdr_roi:'Jährl. ROI',hdr_be:'Break-Even',hdr_eq:'Eigenkapital',
-    be_reached:'Jahr {0}',be_none:'N/A',
-    table_year:'Jahr',table_pv:'Preis',table_rl:'Restschuld',table_eq:'EK',table_cc:'Cashflow',table_nw:'Vermögen',
-    table_rent:'Miete',table_int:'Zinsen',table_repay:'Tilgung',table_cf:'Netto-CF',
-    chart_cf:'Kum. Cashflow',chart_eq:'Eigenkapital',chart_debt:'Restschuld',chart_nw:'Gesamtvermögen',
-    chart_x:'Jahr',chart_y:'Betrag (€)',chart_buy:'0 (Kauf)',chart_be:'✨ Jahr {0}',
-    modal_title:'Parameterbereich',modal_hint:'Bereich einstellen und optimieren. ',modal_hint_lower:'Niedriger = besser',modal_hint_higher:'Höher = besser',modal_hint_opt:'Optimaler Wert vorhanden',
-    modal_cur:'Aktuell: ',modal_min:'Minimum',modal_max:'Maximum',modal_opt:'Optimieren',
-    modal_optval:'Optimal: {0} {1}',modal_optnw:'Vermögen: {0}',
-    alert_dp:'EK übersteigt Gesamtkosten!',alert_range:'Min < Max erforderlich',
-    share_title:'ImmoCalculator — Parameter & Ergebnisse',
-    share_save:'Bild speichern',
-    param_labels:{purchasePrice:'Kaufpreis',appreciationRate:'Wertsteigerung',monthlyRent:'Kaltmiete',rentIncrease:'Mietsteigerung',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Makler',downPayment:'Eigenkapital',interestRate:'Sollzins',tilgung:'Tilgung',hausgeld:'Hausgeld',grundsteuer:'Grundsteuer',insurance:'Versicherung',maintenanceRate:'Instandhaltung',taxRate:'Steuersatz',afaRate:'AfA',buildingRatio:'Gebäudeanteil',holdingPeriod:'Haltedauer'}
-  };
-  LANG_DATA['en'] = {
-    calc:'Calculate',subtitle:'German Investment Property ROI Simulator',
-    footer:'ImmoCalculator — Not financial advice.',
-    kpi_inv:'Total Cost',kpi_monthly:'Ann. Payment',kpi_roi:'Annual ROI',kpi_be:'Break-Even',kpi_finalEq:'Final Equity',kpi_totalNw:'Net Worth',
-    hdr_roi:'Annual ROI',hdr_be:'Break-Even',hdr_eq:'Final Equity',
-    be_reached:'Year {0}',be_none:'N/A',
-    table_year:'Year',table_pv:'Value',table_rl:'Rem. Debt',table_eq:'Equity',table_cc:'Cum. CF',table_nw:'Net Worth',
-    table_rent:'Rent',table_int:'Interest',table_repay:'Repayment',table_cf:'Net CF',
-    chart_cf:'Cum. Cashflow',chart_eq:'Equity',chart_debt:'Rem. Debt',chart_nw:'Net Worth',
-    chart_x:'Year',chart_y:'Amount (€)',chart_buy:'0 (Purchase)',chart_be:'✨ Year {0}',
-    modal_title:'Range Opt.',modal_hint:'Set range and optimize. ',modal_hint_lower:'Lower = better',modal_hint_higher:'Higher = better',modal_hint_opt:'Optimal value exists',
-    modal_cur:'Current: ',modal_min:'Minimum',modal_max:'Maximum',modal_opt:'Optimize',
-    modal_optval:'Optimal: {0} {1}',modal_optnw:'Net Worth: {0}',
-    alert_dp:'DP exceeds total cost!',alert_range:'Min must be < Max',
-    share_title:'ImmoCalculator — Parameters & Results',
-    share_save:'Save Image',
-    param_labels:{purchasePrice:'Purchase Price',appreciationRate:'Appreciation',monthlyRent:'Monthly Rent',rentIncrease:'Rent Increase',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Broker Fee',downPayment:'Down Payment',interestRate:'Interest Rate',tilgung:'Repayment',hausgeld:'Hausgeld',grundsteuer:'Property Tax',insurance:'Insurance',maintenanceRate:'Maintenance',taxRate:'Tax Rate',afaRate:'AfA Deprec.',buildingRatio:'Building %',holdingPeriod:'Holding Period'}
-  };
+  function renderChart(data){var bey=findBreakEvenYear(data),labels=data.map(function(d){return d.year===0?t('chart_buy'):String(d.year);});var dk=document.body.getAttribute('data-theme')!=='light';var gc=dk?'#1e293b':'#e2e8f0',tc=dk?'#64748b':'#64748b',tl=dk?'#94a3b8':'#475569',lc=dk?'#94a3b8':'#334155';var ds=[{label:t('chart_cf'),data:data.map(function(d){return d.cumulativeCashflow;}),borderColor:COLORS.cashflow,fill:false,tension:0.3,pointRadius:2,borderWidth:2},{label:t('chart_eq'),data:data.map(function(d){return d.equity;}),borderColor:COLORS.equity,fill:false,tension:0.3,pointRadius:2,borderWidth:2},{label:t('chart_debt'),data:data.map(function(d){return d.remainingLoan;}),borderColor:COLORS.debt,fill:false,tension:0.3,pointRadius:2,borderWidth:2,borderDash:[5,5]},{label:t('chart_nw'),data:data.map(function(d){return d.netWorth;}),borderColor:COLORS.propertyValue,fill:false,tension:0.3,pointRadius:2,borderWidth:2.5}];var cfg={type:'line',data:{labels:labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,aspectRatio:1.6,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{color:lc,boxWidth:14,padding:16,font:{family:'Inter',size:11}}},tooltip:{backgroundColor:dk?'#1e293b':'#ffffff',borderColor:dk?'#475569':'#cbd5e1',borderWidth:1,padding:10,titleFont:{family:'Inter',size:12},bodyFont:{family:'Inter',size:12},titleColor:dk?'#f1f5f9':'#1e293b',bodyColor:dk?'#94a3b8':'#475569',callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmtEur(ctx.raw);}}},breakEvenLine:{year:bey}},scales:{x:{title:{display:true,text:t('chart_x'),color:tl,font:{family:'Inter',size:12}},ticks:{color:tc,font:{family:'Inter',size:11}},grid:{color:gc}},y:{title:{display:true,text:t('chart_y'),color:tl,font:{family:'Inter',size:12}},ticks:{color:tc,font:{family:'Inter',size:11},callback:function(v){if(Math.abs(v)>=1e6)return(v/1e6).toFixed(1)+'M';if(Math.abs(v)>=1000)return(v/1e3).toFixed(0)+'k';return v;}},grid:{color:gc}}}}};if(chartInstance)chartInstance.destroy();chartInstance=new Chart(chartCanvas,cfg);}
 
-  var lang = localStorage.getItem('immo-lang') || 'cn';
-  function t(key) { var d = LANG_DATA[lang], p = key.split('.'), v = d; for (var i=0; i<p.length; i++) { v = v[p[i]]; if (v===undefined) return key; } return v; }
-  function tf(key) { var s = t(key); for (var i=1; i<arguments.length; i++) s = s.replace('{'+(i-1)+'}', String(arguments[i])); return s; }
+  function renderTable(data){var th=document.querySelector('#dataTable thead'),tb=document.querySelector('#dataTable tbody');if(!th||!tb)return;var cols=[{key:'year',label:t('table_year')},{key:'propertyValue',label:t('table_pv')},{key:'remainingLoan',label:t('table_rl')},{key:'equity',label:t('table_eq')},{key:'cumulativeCashflow',label:t('table_cc')},{key:'netWorth',label:t('table_nw')},{key:'rent',label:t('table_rent')},{key:'loanInterest',label:t('table_int')},{key:'loanRepayment',label:t('table_repay')},{key:'netCashflow',label:t('table_cf')}];th.innerHTML='<tr>'+cols.map(function(c){return'<th>'+c.label+'</th>';}).join('')+'</tr>';tb.innerHTML=data.map(function(row){return'<tr>'+cols.map(function(c){var v=row[c.key];return'<td>'+(c.key==='year'?String(v):fmtEur(v))+'</td>';}).join('')+'</tr>';}).join('');}
 
-  })();
+  function clampDownPayment(){var pp=parseFloat(document.getElementById('purchasePrice').value.replace(/\s/g,''))||0;var dp=document.getElementById('downPayment');var dv=parseFloat(dp.value.replace(/\s/g,''))||0;if(pp>0&&dv>pp){dp.value=pp;var f=dp.getAttribute('data-format');if(f==='euro')dp.value=formatEuroDisplay(pp);}}
+  function run(){clampDownPayment();var inp=getInputs();if(inp.downPayment>=inp.purchasePrice*(1+inp.grunderwerbsteuer+inp.notar+inp.makler)){alert(t('alert_dp'));return;}var result=calculate(inp);renderKPI(result.data,result.monthlyPayment,result.totalAcqCost);renderChart(result.data);renderTable(result.data);}
+
+  var paramRanges={};
+  var paramMeta={purchasePrice:{label:'购买价格',unit:'€',min:100000,max:1000000,step:10000,optimal:'lower'},appreciationRate:{label:'年增值率',unit:'%',min:0,max:8,step:0.5,optimal:'higher'},monthlyRent:{label:'月租金',unit:'€',min:200,max:5000,step:50,optimal:'higher'},rentIncrease:{label:'年租金涨幅',unit:'%',min:0,max:5,step:0.5,optimal:'higher'},grunderwerbsteuer:{label:'Grunderwerbsteuer',unit:'%',min:0,max:7,step:0.5,optimal:'lower'},notar:{label:'Notar+Grundbuch',unit:'%',min:0,max:4,step:0.5,optimal:'lower'},makler:{label:'Makler',unit:'%',min:0,max:7,step:0.5,optimal:'lower'},downPayment:{label:'首付',unit:'€',min:0,max:200000,step:5000,optimal:'optimize'},interestRate:{label:'贷款利率',unit:'%',min:1,max:8,step:0.25,optimal:'lower'},tilgung:{label:'初始Tilgung',unit:'%',min:0.5,max:10,step:0.5,optimal:'optimize'},hausgeld:{label:'Hausgeld',unit:'€/月',min:0,max:1000,step:25,optimal:'lower'},grundsteuer:{label:'Grundsteuer',unit:'€/年',min:0,max:2000,step:50,optimal:'lower'},insurance:{label:'房屋保险',unit:'€/年',min:0,max:2000,step:50,optimal:'lower'},maintenanceRate:{label:'维修储备',unit:'%/年',min:0,max:5,step:0.5,optimal:'lower'},taxRate:{label:'所得税率',unit:'%',min:0,max:50,step:5,optimal:'lower'},afaRate:{label:'AfA折旧率',unit:'%',min:0,max:5,step:0.5,optimal:'higher'},buildingRatio:{label:'建筑占比',unit:'%',min:0,max:100,step:5,optimal:'higher'},holdingPeriod:{label:'持有年限',unit:'年',min:1,max:60,step:1,optimal:'higher'}};
+
+  function optimizeParam(pid,minV,maxV){var base=JSON.parse(JSON.stringify(getInputs()));var steps=30,bestNw=-Infinity,bestV=0,pctKeys=['appreciationRate','rentIncrease','grunderwerbsteuer','notar','makler','interestRate','tilgung','maintenanceRate','taxRate','afaRate','buildingRatio'];for(var s=0;s<=steps;s++){var tv=minV+(maxV-minV)*s/steps;var test=JSON.parse(JSON.stringify(base));if(pctKeys.indexOf(pid)>=0)tv=tv/100;test[pid]=tv;if(test.downPayment>=test.purchasePrice*(1+test.grunderwerbsteuer+test.notar+test.makler))continue;var r=calculate(test),nw=r.data[r.data.length-1].netWorth;if(nw>bestNw){bestNw=nw;bestV=pid.indexOf('Rate')>=0||pctKeys.indexOf(pid)>=0?tv*100:tv;}}return{value:bestV,netWorth:bestNw};}
+
+  function openModal(pid){var m=paramMeta[pid];if(!m)return;var pl=t('param_labels')||{};var modal=document.getElementById('rangeModal');document.getElementById('modalTitle').textContent='\uD83C\uDF9A\uFE0F '+(pl[pid]||m.label)+' '+t('modal_title');var hint=t('modal_hint');hint+=m.optimal==='lower'?t('modal_hint_lower'):m.optimal==='higher'?t('modal_hint_higher'):t('modal_hint_opt');document.getElementById('modalHint').textContent=hint;var cv=parseFloat(document.getElementById(pid).value.replace(/\s/g,''))||0;document.getElementById('modalCurrentVal').textContent=cv+' '+m.unit;var saved=paramRanges[pid];document.getElementById('modalMin').value=saved?saved.min:m.min;var maxVal=saved?saved.max:m.max;if(pid==='downPayment'){var pp=parseFloat(document.getElementById('purchasePrice').value.replace(/\s/g,''))||0;if(pp>0&&maxVal>pp)maxVal=pp;}document.getElementById('modalMax').value=maxVal;document.getElementById('modalOptResult').style.display='none';modal.style.display='flex';modal.dataset.param=pid;modal.dataset.unit=m.unit;}
+
+  function closeModal(){document.getElementById('rangeModal').style.display='none';}
+  function saveCurrentRanges(){var md=document.getElementById('rangeModal'),pid=md.dataset.param;if(!pid)return;var mn=parseFloat(document.getElementById('modalMin').value);var mx=parseFloat(document.getElementById('modalMax').value);if(!isNaN(mn)&&!isNaN(mx))paramRanges[pid]={min:mn,max:mx};}
+
+  form.addEventListener('submit',function(e){e.preventDefault();run();});
+  document.getElementById('headerCalcBtn').addEventListener('click',function(e){e.preventDefault();run();});
+  document.addEventListener('DOMContentLoaded',function(){initTheme();initHeaderScroll();bindNumberFormatting();applyLang();document.getElementById('themeToggle').addEventListener('click',toggleTheme);document.getElementById('langToggle').addEventListener('click',toggleLang);document.getElementById('shareBtn').addEventListener('click',buildShareCard);document.querySelectorAll('.btn-range').forEach(function(b){b.addEventListener('click',function(){openModal(b.dataset.param);});});document.getElementById('modalCloseBtn').addEventListener('click',closeModal);document.getElementById('rangeModal').addEventListener('click',function(e){if(e.target===this)closeModal();});document.getElementById('modalOptimizeBtn').addEventListener('click',function(){saveCurrentRanges();var md=document.getElementById('rangeModal'),pid=md.dataset.param,u=md.dataset.unit;var mn=parseFloat(document.getElementById('modalMin').value)||0;var mx=parseFloat(document.getElementById('modalMax').value)||100;if(mn>=mx){alert(t('alert_range'));return;}var res=optimizeParam(pid,mn,mx);var me=paramMeta[pid];var dv=me.min>=1?Math.round(res.value):res.value.toFixed(me.step<0.1?2:1);document.getElementById('modalOptVal').textContent=tf('modal_optval',dv,u);document.getElementById('modalOptNote').textContent=tf('modal_optnw',fmtEur(res.netWorth));document.getElementById('modalOptResult').style.display='block';});
+document.getElementById('modalMin').addEventListener('input',saveCurrentRanges);
+document.getElementById('modalMax').addEventListener('input',saveCurrentRanges);
+document.getElementById('purchasePrice').addEventListener('input',function(){clampDownPayment();});
+document.getElementById('downPayment').addEventListener('input',function(){clampDownPayment();});
+run();});
+})();
