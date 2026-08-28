@@ -121,6 +121,10 @@ body[data-theme="light"] .icon-moon { display: none; }
   display: grid; grid-template-columns: 380px 1fr;
   gap: 1.5rem; max-width: 1400px; margin: 1.5rem auto; padding: 0 1rem;
 }
+/* Grid items must be allowed to shrink; otherwise the wide data table forces
+   the result panel and chart beyond mobile viewport widths. */
+.layout > * { min-width: 0; }
+
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
 /* ===== Input Panel ===== */
