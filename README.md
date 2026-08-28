@@ -41,7 +41,7 @@
 | **交易成本** | Grunderwerbsteuer、Notar、Makler | 各州不同，默认使用常见值 |
 | **贷款** | 首付金额、贷款利率、初始 Tilgung | Annuitätendarlehen 参数 |
 | **收入** | 月租金、年租金涨幅 | 租金增长假设 |
-| **持有成本** | Hausgeld、Grundsteuer、保险、维修储备 | 年度/月度支出 |
+| **持有成本** | Hausgeld、Grundsteuer、保险、维修储备 | 年度支出，维修按房价百分比 |
 | **税务** | 个人所得税率、AfA 折旧率 | 可选税后计算 |
 | **周期** | 持有年限 | 模拟时间范围（最多 60 年） |
 
@@ -113,7 +113,7 @@ Eine reine Frontend-SPA zur Simulation und Visualisierung der langfristigen Rend
 | **Erwerbskosten** | Grunderwerbsteuer, Notar, Makler | Variiert nach Bundesland |
 | **Darlehen** | Eigenkapital, Sollzins, anfängl. Tilgung | Annuitätendarlehen |
 | **Einnahmen** | Monatsmiete, jährl. Mietsteigerung | Mietwachstumsannahme |
-| **Betriebskosten** | Hausgeld, Grundsteuer, Versicherung, Instandhaltung | Jährliche/monatliche Ausgaben |
+| **Betriebskosten** | Hausgeld, Grundsteuer, Versicherung, Instandhaltung | Jährliche Ausgaben, Instandhaltung als Prozentsatz des Werts |
 | **Steuern** | Einkommensteuersatz, AfA-Satz | Optionale Nachsteuerberechnung |
 | **Zeitraum** | Haltedauer | Simulationshorizont (max. 60 Jahre) |
 
@@ -182,7 +182,7 @@ A pure frontend SPA for simulating and visualizing the long-term returns of buyi
 | **Acquisition costs** | Grunderwerbsteuer, Notar, Makler | Varies by German state |
 | **Loan** | Down payment, interest rate, initial repayment | Annuity loan parameters |
 | **Income** | Monthly rent, annual rent increase | Rent growth assumption |
-| **Holding costs** | Hausgeld, property tax, insurance, maintenance reserve | Annual/monthly expenses |
+| **Holding costs** | Hausgeld, property tax, insurance, maintenance reserve | Annual expenses, maintenance as a percentage of value |
 | **Tax** | Income tax rate, AfA depreciation rate | Optional after-tax calculation |
 | **Period** | Holding period | Simulation horizon (max 60 years) |
 

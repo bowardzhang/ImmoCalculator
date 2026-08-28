@@ -30,7 +30,7 @@ window.IMMO_UI_TEXT = {
     suffixes: {
       purchasePrice: '€', appreciationRate: '%', monthlyRent: '€', rentIncrease: '%',
       grunderwerbsteuer: '%', notar: '%', makler: '%', downPayment: '€',
-      interestRate: '%', tilgung: '%', hausgeld: '€/月', grundsteuer: '€/年',
+      interestRate: '%', tilgung: '%', hausgeld: '€/年', grundsteuer: '€/年',
       insurance: '€/年', maintenanceRate: '%/年', taxRate: '%', afaRate: '%',
       buildingRatio: '%', holdingPeriod: '年'
     },
@@ -46,6 +46,7 @@ window.IMMO_UI_TEXT = {
     metrics: [
       { color:'#22c55e', title:'累计净现金流 (Kum. Cashflow)', paragraphs:['每年所有现金流入减去流出的累计值。','起始为负（首付支出），之后每年叠加：租金收入 − 贷款本息 − 维修 − Hausgeld − Grundsteuer − 保险 − 税费。','转正意味着累计现金回流已覆盖初始投入。'] },
       { color:'#3b82f6', title:'房屋净值 (Eigenkapital)', paragraphs:['当前房价 − 剩余贷款。','反映如果此时卖掉房产并还清贷款后能拿到的钱。','随房价增值和贷款还本逐年增加。'] },
+      { color:'#06b6d4', title:'终期房屋净值', paragraphs:['持有期最后一年的房屋净值。','= 终期房价 − 终期剩余贷款。','只衡量房产权益，不包含累计净现金流。'] },
       { color:'#ef4444', title:'剩余贷款 (Restschuld)', paragraphs:['尚未还清的银行贷款余额。','每年递减 = 上年余额 − 当年本金偿还 (Tilgung)。','贷款还清后归零，此时月供停止，现金流大幅改善。'] },
       { color:'#eab308', title:'总净资产 (Gesamtvermögen)', paragraphs:['房屋净值 + 累计净现金流。','= 房价 − 剩余贷款 + 累计净现金流。','这是衡量投资总回报的核心指标：房产权益与累计现金的合计。'] },
       { color:'#a855f7', title:'年化 ROI', wide:true, paragraphs:['简化年化复利回报率。'], formula:'简单 ROI = 总利润 ÷ 用户总投入 × 100%<br>年化 ROI = (1 + 简单 ROI)<sup>1/年数</sup> − 1', after:['用户总投入 = 首付 + 历年所有负现金流补亏之和；总利润 = 终期净资产 − 初始净资产。','这是简化算法（非 XIRR），把所有投入视为初始投入。'] }
@@ -72,7 +73,7 @@ window.IMMO_UI_TEXT = {
     suffixes: {
       purchasePrice:'€', appreciationRate:'%', monthlyRent:'€', rentIncrease:'%',
       grunderwerbsteuer:'%', notar:'%', makler:'%', downPayment:'€', interestRate:'%',
-      tilgung:'%', hausgeld:'€/Monat', grundsteuer:'€/Jahr', insurance:'€/Jahr',
+      tilgung:'%', hausgeld:'€/Jahr', grundsteuer:'€/Jahr', insurance:'€/Jahr',
       maintenanceRate:'%/Jahr', taxRate:'%', afaRate:'%', buildingRatio:'%', holdingPeriod:'Jahre'
     },
     headerKpis: ['Jährl. ROI', 'Break-even', 'Endvermögen'],
@@ -85,6 +86,7 @@ window.IMMO_UI_TEXT = {
     metrics: [
       { color:'#22c55e', title:'Kumulierter Netto-Cashflow', paragraphs:['Summe aller jährlichen Ein- und Auszahlungen.','Startet wegen des Eigenkapitaleinsatzes negativ. Danach werden Mieteinnahmen abzüglich Annuität, Instandhaltung, Hausgeld, Grundsteuer, Versicherung und Steuern addiert.','Ein positiver Wert bedeutet, dass die kumulierten Rückflüsse den anfänglichen Kapitaleinsatz decken.'] },
       { color:'#3b82f6', title:'Eigenkapital in der Immobilie', paragraphs:['Aktueller Immobilienwert minus Restschuld.','Entspricht näherungsweise dem Betrag, der nach Verkauf und Ablösung des Darlehens verbleibt.','Steigt durch Wertsteigerung und Tilgung.'] },
+      { color:'#06b6d4', title:'End-Eigenkapital in der Immobilie', paragraphs:['Eigenkapital in der Immobilie am Ende des Betrachtungszeitraums.','= Endwert der Immobilie − Restschuld am Ende.','Misst nur den Immobilienanteil, ohne den kumulierten Netto-Cashflow.'] },
       { color:'#ef4444', title:'Restschuld', paragraphs:['Noch nicht zurückgezahlter Darlehenssaldo.','Restschuld des Vorjahres minus jährliche Tilgung.','Nach vollständiger Tilgung entfällt die Annuität.'] },
       { color:'#eab308', title:'Gesamtvermögen', paragraphs:['Eigenkapital in der Immobilie plus kumulierter Netto-Cashflow.','= Immobilienwert − Restschuld + kumulierter Netto-Cashflow.','Zentrale Kennzahl für die gesamte Vermögensentwicklung.'] },
       { color:'#a855f7', title:'Jährlicher ROI', wide:true, paragraphs:['Vereinfachte annualisierte Rendite.'], formula:'Einfacher ROI = Gesamtgewinn ÷ eingesetztes Kapital × 100 %<br>Jährlicher ROI = (1 + einfacher ROI)<sup>1/Jahre</sup> − 1', after:['Eingesetztes Kapital = Eigenkapital plus alle später ausgeglichenen negativen Cashflows.','Vereinfachung, keine zeitgenaue XIRR-Berechnung.'] }
@@ -118,7 +120,7 @@ window.IMMO_UI_TEXT = {
     suffixes: {
       purchasePrice:'€', appreciationRate:'%', monthlyRent:'€', rentIncrease:'%',
       grunderwerbsteuer:'%', notar:'%', makler:'%', downPayment:'€', interestRate:'%',
-      tilgung:'%', hausgeld:'€/mo', grundsteuer:'€/yr', insurance:'€/yr',
+      tilgung:'%', hausgeld:'€/yr', grundsteuer:'€/yr', insurance:'€/yr',
       maintenanceRate:'%/yr', taxRate:'%', afaRate:'%', buildingRatio:'%', holdingPeriod:'years'
     },
     headerKpis: ['Annualized ROI', 'Break-even', 'Final net worth'],
@@ -131,6 +133,7 @@ window.IMMO_UI_TEXT = {
     metrics: [
       { color:'#22c55e', title:'Cumulative net cash flow', paragraphs:['The running total of all annual cash inflows minus cash outflows.','It starts negative because of the down payment. Each year adds rent minus mortgage payments, maintenance, Hausgeld, Grundsteuer, insurance and taxes.','A positive value means cumulative cash returns have covered the initial cash invested.'] },
       { color:'#3b82f6', title:'Property equity (Eigenkapital)', paragraphs:['Current property value minus the remaining loan balance.','It approximates the amount left after selling the property and repaying the mortgage.','It grows through appreciation and principal repayment (Tilgung).'] },
+      { color:'#06b6d4', title:'Final property equity', paragraphs:['Property equity at the end of the holding period.','= Final property value − final remaining loan balance.','It measures only the property stake and excludes cumulative net cash flow.'] },
       { color:'#ef4444', title:'Remaining loan (Restschuld)', paragraphs:['The outstanding mortgage balance.','Previous balance minus principal repaid (Tilgung) during the year.','Once it reaches zero, mortgage payments stop.'] },
       { color:'#eab308', title:'Total net worth (Gesamtvermögen)', paragraphs:['Property equity plus cumulative net cash flow.','= Property value − remaining loan + cumulative net cash flow.','The main measure of overall wealth created by the investment.'] },
       { color:'#a855f7', title:'Annualized ROI', wide:true, paragraphs:['A simplified compound annual return.'], formula:'Simple ROI = total profit ÷ total capital invested × 100%<br>Annualized ROI = (1 + simple ROI)<sup>1/years</sup> − 1', after:['Capital invested = down payment plus all later negative cash-flow contributions.','This is a simplified measure, not a timing-accurate XIRR calculation.'] }

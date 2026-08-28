@@ -64,7 +64,7 @@
             <div class="field-row">
               <label><span class="label-text">年增值率 <small>(Wertsteigerung)</small></span>
                 <div class="input-group">
-                  <input type="number" id="appreciationRate" value="2" min="0" max="20" step="0.1" required >
+                  <input type="number" id="appreciationRate" value="1" min="0" max="20" step="0.1" required >
                   <button type="button" class="btn-range" data-param="appreciationRate" title="参数范围优化">🎚️</button>
                   <span class="suffix">%</span>
                 </div>
@@ -126,7 +126,7 @@
             <div class="field-row">
               <label><span class="label-text">首付 (Eigenkapital)</span>
                 <div class="input-group">
-                  <input type="text" id="downPayment" value="60000" min="0" max="10000000" step="5000" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="downPayment" value="200000" min="0" max="10000000" step="5000" required inputmode="numeric" data-format="euro">
                   <button type="button" class="btn-range" data-param="downPayment" title="参数范围优化">🎚️</button>
                   <span class="suffix">€</span>
                 </div>
@@ -157,16 +157,16 @@
             <div class="field-row">
               <label><span class="label-text">Hausgeld <small>(非分摊部分)</small></span>
                 <div class="input-group">
-                  <input type="text" id="hausgeld" value="150" min="0" max="10000" step="10" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="hausgeld" value="250" min="0" max="10000" step="10" required inputmode="numeric" data-format="euro">
                   <button type="button" class="btn-range" data-param="hausgeld" title="参数范围优化">🎚️</button>
-                  <span class="suffix">€/月</span>
+                  <span class="suffix">€/年</span>
                 </div>
               </label>
             </div>
             <div class="field-row">
               <label><span class="label-text">Grundsteuer</span>
                 <div class="input-group">
-                  <input type="text" id="grundsteuer" value="400" min="0" max="10000" step="20" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="grundsteuer" value="250" min="0" max="10000" step="20" required inputmode="numeric" data-format="euro">
                   <button type="button" class="btn-range" data-param="grundsteuer" title="参数范围优化">🎚️</button>
                   <span class="suffix">€/年</span>
                 </div>
@@ -175,7 +175,7 @@
             <div class="field-row">
               <label><span class="label-text">房屋保险 <small>(Wohngebäude)</small></span>
                 <div class="input-group">
-                  <input type="text" id="insurance" value="300" min="0" max="10000" step="20" required inputmode="numeric" data-format="euro">
+                  <input type="text" id="insurance" value="200" min="0" max="10000" step="20" required inputmode="numeric" data-format="euro">
                   <button type="button" class="btn-range" data-param="insurance" title="参数范围优化">🎚️</button>
                   <span class="suffix">€/年</span>
                 </div>
@@ -274,6 +274,12 @@
               <p>当前房价 − 剩余贷款。</p>
               <p>反映如果此时卖掉房产并还清贷款后能拿到的钱。</p>
               <p>随房价增值和贷款还本逐年增加。</p>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header"><span class="metric-dot" style="background:#06b6d4"></span><b>终期房屋净值</b></div>
+              <p>持有期最后一年的房屋净值。</p>
+              <p>= 终期房价 − 终期剩余贷款。</p>
+              <p>只衡量房产权益，不包含累计净现金流。</p>
             </div>
             <div class="metric-card">
               <div class="metric-header"><span class="metric-dot" style="background:#ef4444"></span><b>剩余贷款 (Restschuld)</b></div>
