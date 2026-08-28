@@ -45,6 +45,7 @@
     alert_dp:'首付金额超过总购房成本！',alert_range:'最小值必须小于最大值',
     share_title:'ImmoCalculator 参数与结果',
     share_save:'保存图片',
+    unit_per_month:'/月',
     param_labels:{purchasePrice:'购买价格',appreciationRate:'年增值率',monthlyRent:'月租金',rentIncrease:'年租金涨幅',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Makler',downPayment:'首付',interestRate:'贷款利率',tilgung:'Tilgung',hausgeld:'Hausgeld',grundsteuer:'Grundsteuer',insurance:'房屋保险',maintenanceRate:'维修储备',taxRate:'所得税率',afaRate:'AfA折旧率',buildingRatio:'建筑占比',holdingPeriod:'持有年限'}
   };
   LANG_DATA['de'] = {
@@ -63,6 +64,7 @@
     alert_dp:'EK übersteigt Gesamtkosten!',alert_range:'Min < Max erforderlich',
     share_title:'ImmoCalculator — Parameter & Ergebnisse',
     share_save:'Bild speichern',
+    unit_per_month:'/Monat',
     param_labels:{purchasePrice:'Kaufpreis',appreciationRate:'Wertsteigerung',monthlyRent:'Kaltmiete',rentIncrease:'Mietsteigerung',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Makler',downPayment:'Eigenkapital',interestRate:'Sollzins',tilgung:'Tilgung',hausgeld:'Hausgeld',grundsteuer:'Grundsteuer',insurance:'Versicherung',maintenanceRate:'Instandhaltung',taxRate:'Steuersatz',afaRate:'AfA',buildingRatio:'Gebäudeanteil',holdingPeriod:'Haltedauer'}
   };
   LANG_DATA['en'] = {
@@ -81,6 +83,7 @@
     alert_dp:'DP exceeds total cost!',alert_range:'Min must be < Max',
     share_title:'ImmoCalculator — Parameters & Results',
     share_save:'Save Image',
+    unit_per_month:'/mo',
     param_labels:{purchasePrice:'Purchase Price',appreciationRate:'Appreciation',monthlyRent:'Monthly Rent',rentIncrease:'Rent Increase',grunderwerbsteuer:'Grunderwerbsteuer',notar:'Notar+Grundbuch',makler:'Broker Fee',downPayment:'Down Payment',interestRate:'Interest Rate',tilgung:'Repayment',hausgeld:'Hausgeld',grundsteuer:'Property Tax',insurance:'Insurance',maintenanceRate:'Maintenance',taxRate:'Tax Rate',afaRate:'AfA Deprec.',buildingRatio:'Building %',holdingPeriod:'Holding Period'}
   };
 
@@ -91,9 +94,94 @@
   function applyLang() {
     var d = LANG_DATA[lang];
     if (!d) return;
-    document.querySelector('.lang-calc').textContent = '📈 ' + d.calc;
+    var ui = (typeof IMMO_UI_TEXT !== 'undefined') ? IMMO_UI_TEXT[lang] : null;
+    if (ui) document.documentElement.lang = ui.htmlLang;
+    document.querySelector('.lang-calc').textContent = '\uD83D\uDCC8 ' + d.calc;
     document.querySelector('.lang-subtitle').textContent = d.subtitle;
     document.querySelector('.lang-footer').textContent = d.footer;
+    if (!ui) { if (chartInstance) run(); return; }
+
+    // Language button label
+    var lt = document.getElementById('langToggle');
+    if (lt) lt.textContent = ui.languageButton;
+
+    // Section legends
+    var legends = document.querySelectorAll('#calcForm fieldset legend');
+    for (var i = 0; i < legends.length && i < ui.sectionLegends.length; i++) {
+      legends[i].innerHTML = ui.sectionLegends[i];
+    }
+
+    // Parameter labels + suffixes
+    var paramIds = Object.keys(ui.parameterLabels);
+    for (var j = 0; j < paramIds.length; j++) {
+      var pid = paramIds[j];
+      var input = document.getElementById(pid);
+      if (!input) continue;
+      var group = input.closest('.input-group');
+      var row = group ? group.closest('.field-row') : null;
+      var labelSpan = row ? row.querySelector('.label-text') : null;
+      if (labelSpan) labelSpan.innerHTML = ui.parameterLabels[pid];
+      var suffix = group ? group.querySelector('.suffix') : null;
+      if (suffix && ui.suffixes[pid]) suffix.textContent = ui.suffixes[pid];
+      var rangeBtn = group ? group.querySelector('.btn-range') : null;
+      if (rangeBtn) rangeBtn.title = ui.rangeButtonTitle;
+    }
+
+    // Header KPI labels
+    var hdrLabels = document.querySelectorAll('.h-kpi-label');
+    for (var h = 0; h < hdrLabels.length && h < ui.headerKpis.length; h++) hdrLabels[h].textContent = ui.headerKpis[h];
+
+    // Result KPI labels
+    var kpiLabels = document.querySelectorAll('.kpi-grid .kpi-label');
+    for (var k = 0; k < kpiLabels.length && k < ui.resultKpis.length; k++) kpiLabels[k].textContent = ui.resultKpis[k];
+
+    // Table title
+    var tableTitle = document.querySelector('.table-wrapper h3');
+    if (tableTitle) tableTitle.textContent = ui.tableTitle;
+
+    // Metric explanations
+    var mt = document.querySelector('.metric-explanations h3');
+    if (mt) mt.textContent = ui.metricsTitle;
+    var metricCards = document.querySelectorAll('.metric-explanations .metric-card');
+    for (var m = 0; m < metricCards.length && m < ui.metrics.length; m++) {
+      var mc = metricCards[m], spec = ui.metrics[m];
+      var titleEl = mc.querySelector('.metric-header b');
+      if (titleEl) titleEl.textContent = spec.title;
+      var dot = mc.querySelector('.metric-dot');
+      if (dot) dot.style.background = spec.color;
+      var parts = [];
+      for (var p = 0; p < spec.paragraphs.length; p++) parts.push('<p>' + spec.paragraphs[p] + '</p>');
+      if (spec.formula) parts.push('<div class="metric-formula">' + spec.formula + '</div>');
+      if (spec.after) for (var a = 0; a < spec.after.length; a++) parts.push('<p>' + spec.after[a] + '</p>');
+      var existing = mc.querySelectorAll('p, .metric-formula');
+      for (var e = 0; e < existing.length; e++) existing[e].remove();
+      mc.insertAdjacentHTML('beforeend', parts.join(''));
+    }
+
+    // Range modal static labels
+    var modalBody = document.querySelector('#rangeModal .modal-body');
+    if (modalBody) {
+      var curLabel = modalBody.querySelector('.modal-cur-label');
+      if (curLabel) curLabel.textContent = ui.modal.current;
+      var rangeLabels = modalBody.querySelectorAll('.modal-range-field label');
+      if (rangeLabels[0]) rangeLabels[0].textContent = ui.modal.min;
+      if (rangeLabels[1]) rangeLabels[1].textContent = ui.modal.max;
+      var optBtn = document.getElementById('modalOptimizeBtn');
+      if (optBtn) optBtn.textContent = ui.modal.optimize;
+    }
+
+    // Share modal static labels
+    var smt = document.getElementById('shareModalTitle');
+    if (smt) smt.textContent = ui.share.title;
+    var sdb = document.getElementById('shareDownloadBtn');
+    if (sdb) sdb.textContent = ui.share.download;
+
+    // Icon tooltips
+    var tt = document.getElementById('themeToggle');
+    if (tt) { tt.title = ui.themeTitle; tt.setAttribute('aria-label', ui.themeTitle); }
+    var sb = document.getElementById('shareBtn');
+    if (sb) { sb.title = ui.shareButtonTitle; sb.setAttribute('aria-label', ui.shareButtonTitle); }
+
     if (chartInstance) run();
   }
 
@@ -135,7 +223,7 @@
     var profit = last.netWorth - data[0].netWorth;
     resBox.innerHTML = ''
       + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_inv||'Inv')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+fmtEur(result.totalAcqCost)+'</div></div>'
-      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_monthly||'Pay')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+fmtEur(result.monthlyPayment)+'/月</div></div>'
+      + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_monthly||'Pay')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+fmtEur(result.monthlyPayment)+t('unit_per_month')+'</div></div>'
       + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_roi||'ROI')+'</div><div style="font-size:1.1rem;font-weight:700;color:#22c55e;">'+fmtPercent(0)+'</div></div>'
       + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_be||'B/E')+'</div><div style="font-size:1.1rem;font-weight:700;color:#f1f5f9;">'+tf('be_reached',findBreakEvenYear(data)||'')+'</div></div>'
       + '<div style="background:#334155;border-radius:6px;padding:0.6rem;text-align:center;"><div style="font-size:0.7rem;color:#94a3b8;">'+(dk.kpi_finalEq||'Eq')+'</div><div style="font-size:1.1rem;font-weight:700;color:#3b82f6;">'+fmtEur(last.equity)+'</div></div>'
@@ -174,7 +262,8 @@
 
   function optimizeParam(pid,minV,maxV){var base=JSON.parse(JSON.stringify(getInputs()));var steps=30,bestNw=-Infinity,bestV=0,pctKeys=['appreciationRate','rentIncrease','grunderwerbsteuer','notar','makler','interestRate','tilgung','maintenanceRate','taxRate','afaRate','buildingRatio'];for(var s=0;s<=steps;s++){var tv=minV+(maxV-minV)*s/steps;var test=JSON.parse(JSON.stringify(base));if(pctKeys.indexOf(pid)>=0)tv=tv/100;test[pid]=tv;if(test.downPayment>=test.purchasePrice*(1+test.grunderwerbsteuer+test.notar+test.makler))continue;var r=calculate(test),nw=r.data[r.data.length-1].netWorth;if(nw>bestNw){bestNw=nw;bestV=pid.indexOf('Rate')>=0||pctKeys.indexOf(pid)>=0?tv*100:tv;}}return{value:bestV,netWorth:bestNw};}
 
-  function openModal(pid){var m=paramMeta[pid];if(!m)return;var pl=t('param_labels')||{};var modal=document.getElementById('rangeModal');document.getElementById('modalTitle').textContent='\uD83C\uDF9A\uFE0F '+(pl[pid]||m.label)+' '+t('modal_title');var hint=t('modal_hint');hint+=m.optimal==='lower'?t('modal_hint_lower'):m.optimal==='higher'?t('modal_hint_higher'):t('modal_hint_opt');document.getElementById('modalHint').textContent=hint;var cv=parseFloat(document.getElementById(pid).value.replace(/\s/g,''))||0;document.getElementById('modalCurrentVal').textContent=cv+' '+m.unit;var saved=paramRanges[pid];document.getElementById('modalMin').value=saved?saved.min:m.min;var maxVal=saved?saved.max:m.max;if(pid==='downPayment'){var pp=parseFloat(document.getElementById('purchasePrice').value.replace(/\s/g,''))||0;if(pp>0&&maxVal>pp)maxVal=pp;}document.getElementById('modalMax').value=maxVal;document.getElementById('modalOptResult').style.display='none';modal.style.display='flex';modal.dataset.param=pid;modal.dataset.unit=m.unit;}
+  function getParamUnit(pid){var ui=(typeof IMMO_UI_TEXT!=='undefined')?IMMO_UI_TEXT[lang]:null;return ui&&ui.suffixes&&ui.suffixes[pid]?ui.suffixes[pid]:paramMeta[pid].unit;}
+  function openModal(pid){var m=paramMeta[pid];if(!m)return;var pl=t('param_labels')||{};var modal=document.getElementById('rangeModal');document.getElementById('modalTitle').textContent='\uD83C\uDF9A\uFE0F '+(pl[pid]||m.label)+' '+t('modal_title');var hint=t('modal_hint');hint+=m.optimal==='lower'?t('modal_hint_lower'):m.optimal==='higher'?t('modal_hint_higher'):t('modal_hint_opt');document.getElementById('modalHint').textContent=hint;var cv=parseFloat(document.getElementById(pid).value.replace(/\s/g,''))||0;var unit=getParamUnit(pid);document.getElementById('modalCurrentVal').textContent=cv+' '+unit;var saved=paramRanges[pid];document.getElementById('modalMin').value=saved?saved.min:m.min;var maxVal=saved?saved.max:m.max;if(pid==='downPayment'){var pp=parseFloat(document.getElementById('purchasePrice').value.replace(/\s/g,''))||0;if(pp>0&&maxVal>pp)maxVal=pp;}document.getElementById('modalMax').value=maxVal;document.getElementById('modalOptResult').style.display='none';modal.style.display='flex';modal.dataset.param=pid;modal.dataset.unit=unit;}
 
   function closeModal(){document.getElementById('rangeModal').style.display='none';}
   function saveCurrentRanges(){var md=document.getElementById('rangeModal'),pid=md.dataset.param;if(!pid)return;var mn=parseFloat(document.getElementById('modalMin').value);var mx=parseFloat(document.getElementById('modalMax').value);if(!isNaN(mn)&&!isNaN(mx))paramRanges[pid]={min:mn,max:mx};}
