@@ -97,11 +97,13 @@
     if (chartInstance) run();
   }
 
-  function toggleLang() {
+    function toggleLang() {
     var langs = ['cn','de','en'];
+    var labels = {'cn':'中文','de':'DE','en':'EN'};
     var idx = langs.indexOf(lang);
     lang = langs[(idx + 1) % 3];
     localStorage.setItem('immo-lang', lang);
+    document.getElementById('langToggle').textContent = labels[lang];
     applyLang();
   }
 
