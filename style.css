@@ -418,3 +418,11 @@ footer { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-
 .financing-disabled .input-group input { cursor: not-allowed; }
 .financing-disabled .btn-range { cursor: not-allowed; opacity: 0.2; }
 .btn-range:disabled { pointer-events: none; }
+
+
+/* Clear, direct disabled-state feedback for mortgage-only controls */
+#useMortgage:checked { accent-color: var(--primary); }
+#downPayment:disabled, #interestRate:disabled, #tilgung:disabled { color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); opacity: 0.55; background: var(--surface-alt); }
+.financing-disabled .input-group { background: var(--surface-alt); border-color: var(--border); opacity: 0.55; }
+.financing-disabled .label-text { color: var(--text-muted); opacity: 0.6; }
+.financing-disabled .btn-range:disabled { opacity: 0.18; cursor: not-allowed; }
