@@ -274,7 +274,7 @@
   function closeModal(){document.getElementById('rangeModal').style.display='none';}
   function saveCurrentRanges(){var md=document.getElementById('rangeModal'),pid=md.dataset.param;if(!pid)return;var mn=parseFloat(document.getElementById('modalMin').value);var mx=parseFloat(document.getElementById('modalMax').value);if(!isNaN(mn)&&!isNaN(mx))paramRanges[pid]={min:mn,max:mx};}
 
-  function updateMortgageFields(){var enabled=document.getElementById('useMortgage').checked;var fieldset=document.getElementById('useMortgage').closest('fieldset');fieldset.classList.toggle('financing-disabled',!enabled);['downPayment','interestRate','tilgung'].forEach(function(id){var input=document.getElementById(id);input.disabled=!enabled;var range=input.closest('.input-group').querySelector('.btn-range');if(range)range.disabled=!enabled;});}
+  function updateMortgageFields(){var enabled=document.getElementById('useMortgage').checked;var fieldset=document.getElementById('useMortgage').closest('fieldset');fieldset.classList.toggle('financing-disabled',!enabled);['downPayment','interestRate','tilgung'].forEach(function(id){var input=document.getElementById(id);input.disabled=!enabled;var range=input.closest('.input-group').querySelector('.btn-range');if(range)range.disabled=!enabled;});var metricCards=document.querySelectorAll('.metric-card');if(metricCards[3])metricCards[3].style.display=enabled?'':'none';}
   document.getElementById('useMortgage').addEventListener('change',function(){updateMortgageFields();run(false);});
   form.addEventListener('submit',function(e){e.preventDefault();run(true);});
   document.getElementById('headerCalcBtn').addEventListener('click',function(e){e.preventDefault();run(true);});
