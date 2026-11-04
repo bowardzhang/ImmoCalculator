@@ -7,6 +7,7 @@ window.IMMO_UI_TEXT = {
       '🏦 贷款参数 <small>Annuitätendarlehen</small>',
       '🔧 持有成本', '📊 税务参数 <small>(可选)</small>', '⏱ 模拟周期'
     ],
+    loanToggleLabel: '考虑房贷',
     parameterLabels: {
       purchasePrice: '购买价格 <small>(Kaufpreis)</small>',
       appreciationRate: '年增值率 <small>(Wertsteigerung)</small>',
@@ -60,6 +61,7 @@ window.IMMO_UI_TEXT = {
       '🏦 Finanzierung <small>(Annuitätendarlehen)</small>',
       '🔧 Laufende Kosten', '📊 Steuerparameter <small>(optional)</small>', '⏱ Simulationszeitraum'
     ],
+    loanToggleLabel: 'Darlehen berücksichtigen',
     parameterLabels: {
       purchasePrice: 'Kaufpreis', appreciationRate: 'Jährliche Wertsteigerung',
       monthlyRent: 'Monatliche Kaltmiete', rentIncrease: 'Jährliche Mietsteigerung',
@@ -100,6 +102,7 @@ window.IMMO_UI_TEXT = {
       '🏦 Financing <small>(Annuitätendarlehen)</small>',
       '🔧 Ongoing costs', '📊 Tax assumptions <small>(optional)</small>', '⏱ Simulation period'
     ],
+    loanToggleLabel: 'Include mortgage',
     parameterLabels: {
       purchasePrice:'Purchase price <small>(Kaufpreis)</small>',
       appreciationRate:'Annual appreciation <small>(Wertsteigerung)</small>',
