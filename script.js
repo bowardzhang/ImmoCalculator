@@ -101,6 +101,10 @@
     document.querySelector('.lang-calc').textContent = '\uD83D\uDCC8 ' + d.calc;
     document.querySelector('.lang-subtitle').textContent = d.subtitle;
     document.querySelector('.lang-footer').textContent = d.footer;
+    var optTitle = document.getElementById('optimalDpTitle');
+    var optNote = document.getElementById('optimalDpNote');
+    if (optTitle) optTitle.textContent = d.opt_dp_title;
+    if (optNote) optNote.textContent = d.opt_dp_note;
     if (!ui) { if (chartInstance) run(); return; }
 
     // Language button label
