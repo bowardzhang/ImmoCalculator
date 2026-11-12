@@ -434,3 +434,5 @@ footer { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-
 .optimal-dp-value { font-size: 1.25rem; font-weight: 700; color: var(--success); font-variant-numeric: tabular-nums; }
 .optimal-dp-detail { font-size: 0.8rem; color: var(--text); }
 .optimal-dp-note { margin-top: 0.25rem; font-size: 0.72rem; line-height: 1.45; color: var(--text-muted); }
+
+.result-optimal-dp { margin-bottom: 1.5rem; }
