@@ -426,3 +426,11 @@ footer { text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-
 .financing-disabled .input-group { background: var(--surface-alt); border-color: var(--border); opacity: 0.55; }
 .financing-disabled .label-text { color: var(--text-muted); opacity: 0.6; }
 .financing-disabled .btn-range:disabled { opacity: 0.18; cursor: not-allowed; }
+
+
+/* ===== Purely mathematical down-payment optimization ===== */
+.optimal-dp-card { padding: 0.8rem; background: var(--bg); border: 1px solid var(--primary); border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 0.25rem; }
+.optimal-dp-card strong { font-size: 0.82rem; color: var(--text); }
+.optimal-dp-value { font-size: 1.25rem; font-weight: 700; color: var(--success); font-variant-numeric: tabular-nums; }
+.optimal-dp-detail { font-size: 0.8rem; color: var(--text); }
+.optimal-dp-note { margin-top: 0.25rem; font-size: 0.72rem; line-height: 1.45; color: var(--text-muted); }
